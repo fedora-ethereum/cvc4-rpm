@@ -68,7 +68,6 @@ Header files and library links for developing applications that use %{name}.
 
 %package doc
 Summary:        Interface documentation for %{name}
-BuildArch:      noarch
 
 %description doc
 Interface documentation for %{name}.
@@ -198,6 +197,7 @@ make check
 %changelog
 * Mon Jan 27 2014 Jerry James <loganjerry@gmail.com> - 1.3-2
 - Install JNI objects in %%{_jnidir}
+- The documentation is arch-specific after all
 
 * Wed Jan 22 2014 Jerry James <loganjerry@gmail.com> - 1.3-1
 - Initial RPM
