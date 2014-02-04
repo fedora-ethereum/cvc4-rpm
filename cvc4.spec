@@ -1,6 +1,6 @@
 Name:           cvc4
 Version:        1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -154,9 +154,9 @@ ln -s $PWD/src/options/options_holder_template.h $BUILDS/src/options
 ln -s $PWD/src/options/options_template.cpp $BUILDS/src/options
 ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
 
-%post libs -p /usr/sbin/ldconfig
+%post libs -p /sbin/ldconfig
 
-%postun libs -p /usr/sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %check
 # The tests use a large amount of stack space
@@ -195,6 +195,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Tue Feb  4 2014 Jerry James <loganjerry@gmail.com> - 1.3-3
+- glibc Provides /sbin/ldconfig, not /usr/sbin/ldconfig
+
 * Mon Jan 27 2014 Jerry James <loganjerry@gmail.com> - 1.3-2
 - Install JNI objects in %%{_jnidir}
 - The documentation is arch-specific after all
