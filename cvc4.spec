@@ -1,3 +1,7 @@
+%ifarch %{ix86} x86_64 ppc ppc64 %{arm}
+%global have_perftools 1
+%endif
+
 Name:           cvc4
 Version:        1.3
 Release:        3%{?dist}
@@ -30,7 +34,9 @@ BuildRequires:  doxygen-latex
 BuildRequires:  ghostscript
 BuildRequires:  glpk-devel
 BuildRequires:  gmp-devel
+%if 0%{?have_perftools}
 BuildRequires:  gperftools-devel
+%endif
 BuildRequires:  java-devel >= 1:1.6.0
 BuildRequires:  jpackage-utils
 BuildRequires:  lfsc
@@ -105,7 +111,10 @@ sed -i "s|^\(javalibdir =.*\)jni|\1java/%{name}|" src/bindings/Makefile.in
 
 %build
 %configure --enable-proof --enable-language-bindings=all --with-portfolio \
-  --with-glpk --with-google-perftools --without-compat \
+%if 0%{?have_perftools}
+  --with-google-perftools
+%endif
+  --with-glpk --without-compat \
   CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -DFEDORA_GLPK_ITCNT -Dlpx_get_int_parm(x,y)=glp_get_it_cnt(x)" \
   LFSCARGS="%{_datadir}/lfsc/sat.plf"
 
