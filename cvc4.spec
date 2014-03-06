@@ -4,7 +4,7 @@
 
 Name:           cvc4
 Version:        1.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -204,6 +204,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Thu Mar  6 2014 Jerry James <loganjerry@gmail.com> - 1.3-4
+- Merge changes from Dan Horák to fix secondary arch builds
+
 * Tue Feb  4 2014 Jerry James <loganjerry@gmail.com> - 1.3-3
 - glibc Provides /sbin/ldconfig, not /usr/sbin/ldconfig
 
