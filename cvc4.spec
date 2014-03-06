@@ -150,7 +150,7 @@ chrpath -d %{buildroot}%{_bindir}/* \
            %{buildroot}%{_jnidir}/%{name}/lib%{name}*.so.*.*.*
 
 # Help the debuginfo generator
-BUILDS=builds/*-redhat-linux-gnu
+BUILDS=builds/*-*-linux-gnu
 for dir in decision expr main parser printer prop smt theory theory/arith \
     theory/arrays theory/booleans theory/bv theory/datatypes theory/idl \
     theory/quantifiers theory/rewriterules theory/strings theory/uf; do
@@ -172,7 +172,7 @@ ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
 ulimit -s unlimited
 
 # The tests require unreleased *.plf files from upstream
-for mk in $(find builds/*-redhat-linux-gnu/default-proof/test -name Makefile)
+for mk in $(find builds/*-*-linux-gnu/default-proof/test -name Makefile)
 do
   sed -e 's,^\(LFSCARGS =\).*,\1 %{SOURCE1} %{SOURCE2} %{SOURCE3},' \
       -e 's,^\(TESTS_ENVIRONMENT = LFSC=\)".*",\1"lfsc %{SOURCE1} %{SOURCE2} %{SOURCE3}",' \
