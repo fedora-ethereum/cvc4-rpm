@@ -112,7 +112,7 @@ sed -i "s|^\(javalibdir =.*\)jni|\1java/%{name}|" src/bindings/Makefile.in
 %build
 %configure --enable-proof --enable-language-bindings=all --with-portfolio \
 %if 0%{?have_perftools}
-  --with-google-perftools
+  --with-google-perftools \
 %endif
   --with-glpk --without-compat \
   CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -DFEDORA_GLPK_ITCNT -Dlpx_get_int_parm(x,y)=glp_get_it_cnt(x)" \
