@@ -1,4 +1,4 @@
-%ifarch %{ix86} x86_64 ppc ppc64 %{arm}
+%ifarch %{ix86} x86_64 ppc ppc64
 %global have_perftools 1
 %endif
 
@@ -204,6 +204,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Fri Aug 22 2014 Jerry James <loganjerry@gmail.com> - 1.3-7
+- Remove arm platforms from have_perftools due to bz 1109309
+
 * Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
