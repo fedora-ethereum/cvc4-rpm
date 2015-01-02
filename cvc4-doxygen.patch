@@ -1,5 +1,5 @@
---- ./src/decision/options.h.orig	2013-12-06 16:07:43.586866550 -0700
-+++ ./src/decision/options.h	2013-12-06 16:07:43.586866550 -0700
+--- ./src/decision/options.h.orig	2014-07-13 11:48:44.263172259 -0600
++++ ./src/decision/options.h	2014-07-13 11:48:44.263172259 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -9,8 +9,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/expr/expr_manager_template.h.orig	2013-12-03 15:24:58.911994034 -0700
-+++ ./src/expr/expr_manager_template.h	2013-12-03 15:24:58.911994034 -0700
+--- ./src/expr/expr_manager_template.h.orig	2014-07-13 11:32:35.479585444 -0600
++++ ./src/expr/expr_manager_template.h	2014-07-13 11:32:35.479585444 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file expr_manager_template.h
@@ -18,8 +18,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: Dejan Jovanovic
---- ./src/expr/expr_template.h.orig	2013-11-27 09:42:59.916302990 -0700
-+++ ./src/expr/expr_template.h	2013-11-27 09:42:59.916302990 -0700
+--- ./src/expr/expr_template.h.orig	2014-07-13 11:32:35.479585444 -0600
++++ ./src/expr/expr_template.h	2014-07-13 11:32:35.479585444 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file expr_template.h
@@ -27,8 +27,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: Dejan Jovanovic
---- ./src/expr/kind_template.h.orig	2013-11-11 10:21:58.180347624 -0700
-+++ ./src/expr/kind_template.h	2013-11-11 10:21:58.180347624 -0700
+--- ./src/expr/kind_template.h.orig	2014-07-13 11:32:35.479585444 -0600
++++ ./src/expr/kind_template.h	2014-07-13 11:32:35.479585444 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file kind_template.h
@@ -36,8 +36,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: Dejan Jovanovic
---- ./src/expr/options.h.orig	2013-12-06 16:07:22.010279788 -0700
-+++ ./src/expr/options.h	2013-12-06 16:07:22.010279788 -0700
+--- ./src/expr/options.h.orig	2014-07-13 11:48:13.930308852 -0600
++++ ./src/expr/options.h	2014-07-13 11:48:13.930308852 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -47,8 +47,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/main/options.h.orig	2013-12-06 16:07:45.234911367 -0700
-+++ ./src/main/options.h	2013-12-06 16:07:45.234911367 -0700
+--- ./src/main/options.h.orig	2014-07-13 11:48:47.275258010 -0600
++++ ./src/main/options.h	2014-07-13 11:48:47.275258010 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -58,8 +58,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/options/base_options.h.orig	2013-12-06 16:07:21.118255532 -0700
-+++ ./src/options/base_options.h	2013-12-06 16:07:21.118255532 -0700
+--- ./src/options/base_options.h.orig	2014-07-13 11:48:12.830277541 -0600
++++ ./src/options/base_options.h	2014-07-13 11:48:12.830277541 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -69,8 +69,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/options/base_options_template.h.orig	2013-11-11 10:21:58.276350312 -0700
-+++ ./src/options/base_options_template.h	2013-11-11 10:21:58.276350312 -0700
+--- ./src/options/base_options_template.h.orig	2014-07-13 11:32:35.579588292 -0600
++++ ./src/options/base_options_template.h	2014-07-13 11:32:35.579588292 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file base_options_template.h
@@ -78,8 +78,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/options/options.h.orig	2013-11-11 10:21:58.284350536 -0700
-+++ ./src/options/options.h	2013-11-11 10:21:58.284350536 -0700
+--- ./src/options/options.h.orig	2014-07-01 12:37:15.061881767 -0600
++++ ./src/options/options.h	2014-07-01 12:37:15.061881767 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file options.h
@@ -87,8 +87,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/parser/options.h.orig	2013-12-06 16:07:46.070934102 -0700
-+++ ./src/parser/options.h	2013-12-06 16:07:46.070934102 -0700
+--- ./src/parser/options.h.orig	2014-07-13 11:48:48.427290778 -0600
++++ ./src/parser/options.h	2014-07-13 11:48:48.427290778 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -98,8 +98,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/printer/options.h.orig	2013-12-06 16:07:39.042742975 -0700
-+++ ./src/printer/options.h	2013-12-06 16:07:39.042742975 -0700
+--- ./src/printer/options.h.orig	2014-07-13 11:48:37.070967532 -0600
++++ ./src/printer/options.h	2014-07-13 11:48:37.070967532 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -109,8 +109,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/proof/options.h.orig	2013-12-06 16:07:38.522728834 -0700
-+++ ./src/proof/options.h	2013-12-06 16:07:38.522728834 -0700
+--- ./src/proof/options.h.orig	2014-07-13 11:48:36.346946926 -0600
++++ ./src/proof/options.h	2014-07-13 11:48:36.346946926 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -120,8 +120,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/prop/options.h.orig	2013-12-06 16:07:38.086716977 -0700
-+++ ./src/prop/options.h	2013-12-06 16:07:38.086716977 -0700
+--- ./src/prop/options.h.orig	2014-07-13 11:48:35.870933374 -0600
++++ ./src/prop/options.h	2014-07-13 11:48:35.870933374 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -131,8 +131,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/smt/options.h.orig	2013-12-06 16:07:42.546838267 -0700
-+++ ./src/smt/options.h	2013-12-06 16:07:42.546838267 -0700
+--- ./src/smt/options.h.orig	2014-07-13 11:48:42.683127279 -0600
++++ ./src/smt/options.h	2014-07-13 11:48:42.683127279 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -142,8 +142,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/arith/options.h.orig	2013-12-06 16:07:28.406453727 -0700
-+++ ./src/theory/arith/options.h	2013-12-06 16:07:28.406453727 -0700
+--- ./src/theory/arith/options.h.orig	2014-07-13 11:48:23.866591680 -0600
++++ ./src/theory/arith/options.h	2014-07-13 11:48:23.866591680 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -153,8 +153,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/arrays/options.h.orig	2013-12-06 16:07:31.002524327 -0700
-+++ ./src/theory/arrays/options.h	2013-12-06 16:07:31.002524327 -0700
+--- ./src/theory/arrays/options.h.orig	2014-07-13 11:48:26.966679925 -0600
++++ ./src/theory/arrays/options.h	2014-07-13 11:48:26.966679925 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -164,8 +164,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/booleans/options.h.orig	2013-12-06 16:07:22.494292954 -0700
-+++ ./src/theory/booleans/options.h	2013-12-06 16:07:22.494292954 -0700
+--- ./src/theory/booleans/options.h.orig	2014-07-13 11:48:14.450323654 -0600
++++ ./src/theory/booleans/options.h	2014-07-13 11:48:14.450323654 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -175,8 +175,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/builtin/options.h.orig	2013-12-06 16:07:25.114364203 -0700
-+++ ./src/theory/builtin/options.h	2013-12-06 16:07:25.114364203 -0700
+--- ./src/theory/builtin/options.h.orig	2014-07-13 11:48:18.334434213 -0600
++++ ./src/theory/builtin/options.h	2014-07-13 11:48:18.334434213 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -186,8 +186,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/bv/options.h.orig	2013-12-06 16:07:24.114337006 -0700
-+++ ./src/theory/bv/options.h	2013-12-06 16:07:24.114337006 -0700
+--- ./src/theory/bv/options.h.orig	2014-07-13 11:48:17.270403926 -0600
++++ ./src/theory/bv/options.h	2014-07-13 11:48:17.270403926 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -197,8 +197,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/datatypes/options.h.orig	2013-12-06 16:07:24.714353323 -0700
-+++ ./src/theory/datatypes/options.h	2013-12-06 16:07:24.714353323 -0700
+--- ./src/theory/datatypes/options.h.orig	2014-07-13 11:48:17.930422713 -0600
++++ ./src/theory/datatypes/options.h	2014-07-13 11:48:17.930422713 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -208,8 +208,19 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/options.h.orig	2013-12-06 16:07:23.074308723 -0700
-+++ ./src/theory/options.h	2013-12-06 16:07:23.074308723 -0700
+--- ./src/theory/idl/options.h.orig	2014-07-13 11:48:49.099309909 -0600
++++ ./src/theory/idl/options.h	2014-07-13 11:48:49.099309909 -0600
+@@ -28,7 +28,7 @@
+ /* Edit the template file instead.                     */
+ 
+ /*********************                                                        */
+-/*! \file base_options_template.h
++/*! \file theory/idl/options.h
+  ** \verbatim
+  ** Original author: Morgan Deters
+  ** Major contributors: none
+--- ./src/theory/options.h.orig	2014-07-13 11:48:15.082341645 -0600
++++ ./src/theory/options.h	2014-07-13 11:48:15.082341645 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -219,8 +230,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/quantifiers/options.h.orig	2013-12-06 16:07:35.278640613 -0700
-+++ ./src/theory/quantifiers/options.h	2013-12-06 16:07:35.278640613 -0700
+--- ./src/theory/quantifiers/options.h.orig	2014-07-13 11:48:32.886848435 -0600
++++ ./src/theory/quantifiers/options.h	2014-07-13 11:48:32.886848435 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -230,19 +241,30 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/rewriterules/options.h.orig	2013-12-06 16:07:35.926658235 -0700
-+++ ./src/theory/rewriterules/options.h	2013-12-06 16:07:35.926658235 -0700
+--- ./src/theory/sets/options.h.orig	2014-07-13 11:48:49.839330972 -0600
++++ ./src/theory/sets/options.h	2014-07-13 11:48:49.839330972 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
  /*********************                                                        */
 -/*! \file base_options_template.h
-+/*! \file theory/rewriterules/options.h
++/*! \file theory/sets/options.h
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/theory/uf/options.h.orig	2013-12-06 16:07:30.142500939 -0700
-+++ ./src/theory/uf/options.h	2013-12-06 16:07:30.142500939 -0700
+--- ./src/theory/strings/options.h.orig	2014-07-13 11:48:34.382891021 -0600
++++ ./src/theory/strings/options.h	2014-07-13 11:48:34.382891021 -0600
+@@ -28,7 +28,7 @@
+ /* Edit the template file instead.                     */
+ 
+ /*********************                                                        */
+-/*! \file base_options_template.h
++/*! \file theory/strings/options.h
+  ** \verbatim
+  ** Original author: Morgan Deters
+  ** Major contributors: none
+--- ./src/theory/uf/options.h.orig	2014-07-13 11:48:25.926650321 -0600
++++ ./src/theory/uf/options.h	2014-07-13 11:48:25.926650321 -0600
 @@ -28,7 +28,7 @@
  /* Edit the template file instead.                     */
  
@@ -252,8 +274,8 @@
   ** \verbatim
   ** Original author: Morgan Deters
   ** Major contributors: none
---- ./src/util/tls.h.in.orig	2013-12-03 13:43:42.822811181 -0700
-+++ ./src/util/tls.h.in	2013-12-03 13:43:42.822811181 -0700
+--- ./src/util/tls.h.in.orig	2014-07-13 11:32:36.123603789 -0600
++++ ./src/util/tls.h.in	2014-07-13 11:32:36.123603789 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file tls.h.in

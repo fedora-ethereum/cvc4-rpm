@@ -1,10 +1,13 @@
+# CVC4 1.4 and later need a modified glpk, unavailable in Fedora.  Therefore,
+# we currently build without glpk support.
+
 %ifarch %{ix86} x86_64 ppc ppc64
 %global have_perftools 1
 %endif
 
 Name:           cvc4
-Version:        1.3
-Release:        7%{?dist}
+Version:        1.4
+Release:        1%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -12,19 +15,20 @@ Summary:        Automatic theorem prover for SMT problems
 #   o src/util/channel.h
 #   o examples/hashsmt/sha1.hpp
 # - Files containing code under the BSD license:
+#   o proofs/lfsc_checker/*
 #   o src/parser/antlr_input_imports.cpp
 #   o src/parser/bounded_token_buffer.cpp
 # - All other files are distributed under the MIT license
-License:        MIT and BSD and Boost
+# But we link with readline, so it all gets subsumed by GPLv3+ anyway.
+License:        GPLv3+
 URL:            http://cvc4.cs.nyu.edu/web/
 Source0:        http://cvc4.cs.nyu.edu/builds/src/%{name}-%{version}.tar.gz
-# Updated *.plf files from upstream.  These are needed only for the self-tests.
-Source1:        smt.plf
-Source2:        sat.plf
-Source3:        th_base.plf
 # Fix some doxygen problems.  Upstream plans to fix this differently.
 Patch0:         %{name}-doxygen.patch
+# Adapt to the way the Fedora ABC package is constructed.
+Patch1:         %{name}-abc.patch
 
+BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
 BuildRequires:  boost-devel
@@ -32,21 +36,21 @@ BuildRequires:  chrpath
 BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
 BuildRequires:  ghostscript
-BuildRequires:  glpk-devel
 BuildRequires:  gmp-devel
 %if 0%{?have_perftools}
 BuildRequires:  gperftools-devel
 %endif
-BuildRequires:  java-devel >= 1:1.6.0
+BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
-BuildRequires:  lfsc
 BuildRequires:  perl
 BuildRequires:  python
 BuildRequires:  readline-devel
 BuildRequires:  swig
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-Requires:       lfsc
+
+Obsoletes:      lfsc < 1.0-1%{?dist}
+Provides:       lfsc = %{version}-%{release}
 
 %description
 CVC4 is an efficient open-source automatic theorem prover for
@@ -74,6 +78,7 @@ Header files and library links for developing applications that use %{name}.
 
 %package doc
 Summary:        Interface documentation for %{name}
+Provides:       bundled(jquery)
 
 %description doc
 Interface documentation for %{name}.
@@ -96,33 +101,51 @@ Java interface to %{name}.
 
 %prep
 %setup -q
-# The rpm patch macro doesn't understand -T, and we need to it to avoid
+# The rpm patch macro doesn't understand -T, and we need it to to avoid
 # regenerating the very files we're trying to patch.
 patch -p0 -T < %{PATCH0}
+%patch1
 
-# Don't change the build flags we want to use and avoid hardcoded rpaths
+# Don't change the build flags we want to use, avoid hardcoded rpaths, adapt to
+# antlr 3.5, and allow boost to use g++ 4.9.
 sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
-    -e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
-    -e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' \
+    -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
+    -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
+    -e 's,\([^.]\)3\.4,\13.5,g' \
+    -e 's,\(__GNUC_MINOR__ == \)8\(.*\)gcc48,\19\2gcc49,' \
     -i configure
 
 # Change the Java installation paths for Fedora
 sed -i "s|^\(javalibdir =.*\)jni|\1java/%{name}|" src/bindings/Makefile.in
 
+# Make lfsc documentation available
+cp -p proofs/lfsc_checker/AUTHORS AUTHORS.lfsc
+cp -p proofs/lfsc_checker/COPYING COPYING.lfsc
+cp -p proofs/lfsc_checker/NEWS NEWS.lfsc
+cp -p proofs/lfsc_checker/README README.lfsc
+
+# Preserve timestamps when installing
+for fil in $(find . -name Makefile\*); do
+  sed -i 's/$(install_sh) -c/$(install_sh) -p/' $fil
+done
+
 %build
-%configure --enable-proof --enable-language-bindings=all --with-portfolio \
+export CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
+%if %{__isa_bits} == 64
+CPPFLAGS+=" -DLIN64"
+%else
+CPPFLAGS+=" -DLIN"
+%endif
+%configure --enable-gpl --enable-proof --enable-language-bindings=all \
 %if 0%{?have_perftools}
   --with-google-perftools \
 %endif
-  --with-glpk --without-compat \
-  CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -DFEDORA_GLPK_ITCNT -Dlpx_get_int_parm(x,y)=glp_get_it_cnt(x)" \
-  LFSCARGS="%{_datadir}/lfsc/sat.plf"
+  --with-portfolio --with-abc --with-abc-dir=%{_prefix} --with-readline \
+  --without-compat
 
 # Workaround libtool reordering -Wl,--as-needed after all the libraries
-sed -i 's/CC=.g../& -Wl,--as-needed/' builds/*-linux-gnu/default-proof/libtool
-
-# Workaround insufficiently quoted CPPFLAGS
-find builds -name Makefile | xargs sed -i 's/-Dlpx.*glp_get_it_cnt(x)/"&"/'
+sed -i 's/CC=.g../& -Wl,--as-needed/' \
+    builds/*-linux-gnu*/production-abc-proof/libtool
 
 make %{?_smp_mflags}
 make doc
@@ -150,14 +173,14 @@ chrpath -d %{buildroot}%{_bindir}/* \
            %{buildroot}%{_jnidir}/%{name}/lib%{name}*.so.*.*.*
 
 # Help the debuginfo generator
-BUILDS=builds/*-*-linux-gnu
+BUILDS=$(echo builds/*-*-linux-gnu*)
 for dir in decision expr main parser printer prop smt theory theory/arith \
     theory/arrays theory/booleans theory/bv theory/datatypes theory/idl \
     theory/quantifiers theory/rewriterules theory/strings theory/uf; do
-  ln -s $PWD/src/$dir/options $BUILDS/default-proof/src/$dir
+  ln -s $PWD/src/$dir/options $BUILDS/production-abc-proof/src/$dir
 done
-ln -s default-proof/src $BUILDS
-ln -s $PWD/src/options/base_options $BUILDS/default-proof/src/options
+ln -s production-abc-proof/src $BUILDS
+ln -s $PWD/src/options/base_options $BUILDS/production-abc-proof/src/options
 ln -s $PWD/src/options/base_options_template.cpp $BUILDS/src/options
 ln -s $PWD/src/options/options_holder_template.h $BUILDS/src/options
 ln -s $PWD/src/options/options_template.cpp $BUILDS/src/options
@@ -171,19 +194,14 @@ ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
 # The tests use a large amount of stack space
 ulimit -s unlimited
 
-# The tests require unreleased *.plf files from upstream
-for mk in $(find builds/*-*-linux-gnu/default-proof/test -name Makefile)
-do
-  sed -e 's,^\(LFSCARGS =\).*,\1 %{SOURCE1} %{SOURCE2} %{SOURCE3},' \
-      -e 's,^\(TESTS_ENVIRONMENT = LFSC=\)".*",\1"lfsc %{SOURCE1} %{SOURCE2} %{SOURCE3}",' \
-      -i $mk
-done
-
+export LD_LIBRARY_PATH=$PWD/builds%{_libdir}
 make check 
 
 %files
-%doc AUTHORS NEWS README RELEASE-NOTES THANKS
+%doc AUTHORS AUTHORS.lfsc NEWS NEWS.lfsc README README.lfsc RELEASE-NOTES THANKS
+%license COPYING.lfsc
 %{_bindir}/*
+%{_datadir}/%{name}/
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
@@ -191,7 +209,7 @@ make check
 %doc doc/doxygen/*
 
 %files libs
-%doc COPYING
+%license COPYING
 %{_libdir}/lib%{name}*.so.*
 
 %files devel
@@ -204,6 +222,12 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Thu Jan  1 2015 Jerry James <loganjerry@gmail.com> - 1.4-1
+- New upstream release
+- Drop updated test files, now included upstream
+- Drop obsolete workarounds for glpk compatibility
+- Drop lfsc BR/R, as it has been incorporated into cvc4
+
 * Fri Aug 22 2014 Jerry James <loganjerry@gmail.com> - 1.3-7
 - Remove arm platforms from have_perftools due to bz 1109309
 

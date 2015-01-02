@@ -1,0 +1,30 @@
+--- ./configure.orig	2014-07-13 11:47:37.469270988 -0600
++++ ./configure	2015-01-01 21:00:00.000000000 -0700
+@@ -19368,7 +19368,7 @@ See \`config.log' for more details" "$LI
+ 
+ fi
+ 
+-  if ! test -d "$ABC_HOME" || ! test -x "$ABC_HOME/arch_flags"; then
++  if ! test -d "$ABC_HOME" ; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+ as_fn_error $? "either $ABC_HOME is not an abc source tree or it's not yet built
+@@ -19377,15 +19377,15 @@ See \`config.log' for more details" "$LI
+ 
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for arch_flags to use with libabc" >&5
+ $as_echo_n "checking for arch_flags to use with libabc... " >&6; }
+-  libabc_arch_flags="$("$ABC_HOME/arch_flags")"
++  libabc_arch_flags=""
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libabc_arch_flags" >&5
+ $as_echo "$libabc_arch_flags" >&6; }
+-  CVC4CPPFLAGS="${CVC4CPPFLAGS:+$CVC4CPPFLAGS }-I$ABC_HOME/src $libabc_arch_flags"
++  CVC4CPPFLAGS="${CVC4CPPFLAGS:+$CVC4CPPFLAGS }-I$ABC_HOME/include/abc"
+   ABC_LDFLAGS="-L$ABC_HOME"
+ 
+     cvc4_save_LDFLAGS="$LDFLAGS"
+   ABC_LIBS=
+-  CPPFLAGS="$CPPFLAGS -I$ABC_HOME/src $libabc_arch_flags"
++  CPPFLAGS="$CPPFLAGS -I$ABC_HOME/include/abc"
+   LDFLAGS="$LDFLAGS $ABC_LDFLAGS"
+   ac_fn_c_check_header_mongrel "$LINENO" "base/abc/abc.h" "ac_cv_header_base_abc_abc_h" "$ac_includes_default"
+ if test "x$ac_cv_header_base_abc_abc_h" = xyes; then :
