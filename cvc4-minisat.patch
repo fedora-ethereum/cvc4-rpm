@@ -1,0 +1,30 @@
+--- ./src/prop/minisat/core/SolverTypes.h.orig	2014-06-22 01:17:45.510946923 -0600
++++ ./src/prop/minisat/core/SolverTypes.h	2015-03-11 21:00:00.000000000 -0600
+@@ -340,7 +340,7 @@ class OccLists
+     OccLists(const Deleted& d) : deleted(d) {}
+     
+     void  init      (const Idx& idx){ occs.growTo(toInt(idx)+1); dirty.growTo(toInt(idx)+1, 0); }
+-    void  resizeTo  (const Idx& idx){ int shrinkSize = occs.size() - (toInt(idx) + 1); occs.shrink(shrinkSize); }
++    void  resizeTo  (const Idx& idx);
+     // Vec&  operator[](const Idx& idx){ return occs[toInt(idx)]; }
+     Vec&  operator[](const Idx& idx){ return occs[toInt(idx)]; }
+     Vec&  lookup    (const Idx& idx){ if (dirty[toInt(idx)]) clean(idx); return occs[toInt(idx)]; }
+@@ -386,6 +386,18 @@ void OccLists<Idx,Vec,Deleted>::clean(co
+ }
+ 
+ 
++template<class Idx, class Vec, class Deleted>
++void OccLists<Idx,Vec,Deleted>::resizeTo(const Idx& idx)
++{
++    for (int i = 0; i < dirties.size(); i++)
++        if (toInt(dirties[i]) > toInt(idx))
++            clean(dirties[i]);
++
++    int shrinkSize = occs.size() - (toInt(idx) + 1);
++    occs.shrink(shrinkSize);
++}
++
++
+ //=================================================================================================
+ // CMap -- a class for mapping clauses to values:
+ 

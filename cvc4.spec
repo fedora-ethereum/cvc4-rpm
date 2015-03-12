@@ -27,6 +27,12 @@ Source0:        http://cvc4.cs.nyu.edu/builds/src/%{name}-%{version}.tar.gz
 Patch0:         %{name}-doxygen.patch
 # Adapt to the way the Fedora ABC package is constructed.
 Patch1:         %{name}-abc.patch
+# Fix some mixed signed/unsigned comparisons
+Patch2:         %{name}-signed.patch
+# Fix some broken boolean expressions
+Patch3:         %{name}-boolean.patch
+# Fix out-of-bounds array accesses in the minisat code
+Patch4:         %%{name}-minisat.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -105,24 +111,35 @@ Java interface to %{name}.
 # regenerating the very files we're trying to patch.
 patch -p0 -T < %{PATCH0}
 %patch1
+%patch2
+%patch3
+%patch4
 
 # Don't change the build flags we want to use, avoid hardcoded rpaths, adapt to
-# antlr 3.5, and allow boost to use g++ 4.9.
+# antlr 3.5, and allow boost to use g++ 5.0.
 sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
     -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
     -e 's,\([^.]\)3\.4,\13.5,g' \
-    -e 's,\(__GNUC_MINOR__ == \)8\(.*\)gcc48,\19\2gcc49,' \
+    -e 's,\$ac_cpp conftest,$ac_cpp -P conftest,' \
+    -e 's,\(__GNUC__ == \)4\(.*_MINOR__ == \)8\(.*\)gcc48,\15\20\3gcc50,' \
     -i configure
 
 # Change the Java installation paths for Fedora
 sed -i "s|^\(javalibdir =.*\)jni|\1java/%{name}|" src/bindings/Makefile.in
+
+# Fix access to an uninitialized variable
+sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
+    -i src/parser/cvc/generated/CvcParser.c
 
 # Make lfsc documentation available
 cp -p proofs/lfsc_checker/AUTHORS AUTHORS.lfsc
 cp -p proofs/lfsc_checker/COPYING COPYING.lfsc
 cp -p proofs/lfsc_checker/NEWS NEWS.lfsc
 cp -p proofs/lfsc_checker/README README.lfsc
+
+# Help the documentation generator
+cp -p COPYING src/bindings/compat/c
 
 # Preserve timestamps when installing
 for fil in $(find . -name Makefile\*); do
@@ -136,16 +153,18 @@ CPPFLAGS+=" -DLIN64"
 %else
 CPPFLAGS+=" -DLIN"
 %endif
+export CFLAGS="%{optflags} -fsigned-char"
+export CXXFLAGS="%{optflags} -fsigned-char"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
 %if 0%{?have_perftools}
   --with-google-perftools \
 %endif
-  --with-portfolio --with-abc --with-abc-dir=%{_prefix} --with-readline \
-  --without-compat
+  --disable-silent-rules --with-portfolio --with-abc --with-abc-dir=%{_prefix} \
+  --with-readline --without-compat
 
 # Workaround libtool reordering -Wl,--as-needed after all the libraries
-sed -i 's/CC=.g../& -Wl,--as-needed/' \
-    builds/*-linux-gnu*/production-abc-proof/libtool
+BUILDS=$(echo $PWD/builds/*linux*/*abc*)
+sed -i 's/CC=.g../& -Wl,--as-needed/' $BUILDS/libtool
 
 make %{?_smp_mflags}
 make doc
@@ -173,14 +192,14 @@ chrpath -d %{buildroot}%{_bindir}/* \
            %{buildroot}%{_jnidir}/%{name}/lib%{name}*.so.*.*.*
 
 # Help the debuginfo generator
-BUILDS=$(echo builds/*-*-linux-gnu*)
+BUILDS=$(echo $PWD/builds/*linux*/*abc*)
 for dir in decision expr main parser printer prop smt theory theory/arith \
     theory/arrays theory/booleans theory/bv theory/datatypes theory/idl \
     theory/quantifiers theory/rewriterules theory/strings theory/uf; do
-  ln -s $PWD/src/$dir/options $BUILDS/production-abc-proof/src/$dir
+  ln -s $PWD/src/$dir/options $BUILDS/src/$dir
 done
-ln -s production-abc-proof/src $BUILDS
-ln -s $PWD/src/options/base_options $BUILDS/production-abc-proof/src/options
+ln -s production-abc-proof/src $BUILDS/../src
+ln -s $PWD/src/options/base_options $BUILDS/src/options
 ln -s $PWD/src/options/base_options_template.cpp $BUILDS/src/options
 ln -s $PWD/src/options/options_holder_template.h $BUILDS/src/options
 ln -s $PWD/src/options/options_template.cpp $BUILDS/src/options
@@ -193,6 +212,12 @@ ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
 %check
 # The tests use a large amount of stack space
 ulimit -s unlimited
+
+# Do not rebuild when checking
+BUILDS=$(echo $PWD/builds/*linux*/*abc*)
+sed -e 's/\(units.*:\) all/\1/' \
+    -e 's/\(regress.*:\) all/\1/' \
+    -i $BUILDS/Makefile $BUILDS/Makefile.builds
 
 export LD_LIBRARY_PATH=$PWD/builds%{_libdir}
 make check 
@@ -222,6 +247,14 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Wed Mar 11 2015 Jerry James <loganjerry@gmail.com> - 1.4-2
+- Add -boolean, -minisat, and -signed patches to fix test failures
+- Fix boost detection with g++ 5.0
+- Fix access to an uninitialized variable
+- Help the documentation generator find COPYING
+- Build with -fsigned-char to fix the arm build
+- Prevent rebuilds while running checks
+
 * Tue Jan 27 2015 Petr Machata <pmachata@redhat.com> - 1.4-2
 - Rebuild for boost 1.57.0
 
