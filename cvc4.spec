@@ -1,7 +1,8 @@
 # CVC4 1.4 and later need a modified glpk, unavailable in Fedora.  Therefore,
 # we currently build without glpk support.
 
-%ifarch %{ix86} x86_64 ppc ppc64
+# Building for i686 with perftools leads to test failures on F22.
+%ifarch x86_64 ppc ppc64
 %global have_perftools 1
 %endif
 
@@ -254,6 +255,7 @@ make check
 - Help the documentation generator find COPYING
 - Build with -fsigned-char to fix the arm build
 - Prevent rebuilds while running checks
+- Remove i686 from have_perftools due to test failures
 
 * Tue Jan 27 2015 Petr Machata <pmachata@redhat.com> - 1.4-2
 - Rebuild for boost 1.57.0
