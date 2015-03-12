@@ -148,11 +148,11 @@ done
 
 %build
 export CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
-%if %{__isa_bits} == 64
+if [ "%{__isa_bits}" == "64" ]; then
 CPPFLAGS+=" -DLIN64"
-%else
+else
 CPPFLAGS+=" -DLIN"
-%endif
+fi
 export CFLAGS="%{optflags} -fsigned-char"
 export CXXFLAGS="%{optflags} -fsigned-char"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
