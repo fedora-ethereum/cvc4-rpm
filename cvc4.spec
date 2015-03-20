@@ -1,14 +1,9 @@
 # CVC4 1.4 and later need a modified glpk, unavailable in Fedora.  Therefore,
 # we currently build without glpk support.
 
-# Building for i686 with perftools leads to test failures on F22.
-%ifarch x86_64 ppc ppc64
-%global have_perftools 1
-%endif
-
 Name:           cvc4
 Version:        1.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -44,9 +39,6 @@ BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
 BuildRequires:  ghostscript
 BuildRequires:  gmp-devel
-%if 0%{?have_perftools}
-BuildRequires:  gperftools-devel
-%endif
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
 BuildRequires:  perl
@@ -56,6 +48,7 @@ BuildRequires:  swig
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
+# This can be removed once F-22 reaches EOL
 Obsoletes:      lfsc < 1.0-1%{?dist}
 Provides:       lfsc = %{version}-%{release}
 
@@ -79,6 +72,10 @@ its use for research or commercial purposes.
 %package devel
 Summary:        Headers and other files for developing with %{name}
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+# This can be removed once F-22 reaches EOL
+Obsoletes:      lfsc-devel < 1.0-1%{?dist}
+Provides:       lfsc-devel = %{version}-%{release}
 
 %description devel
 Header files and library links for developing applications that use %{name}.
@@ -157,9 +154,6 @@ fi
 export CFLAGS="%{optflags} -fsigned-char"
 export CXXFLAGS="%{optflags} -fsigned-char"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
-%if 0%{?have_perftools}
-  --with-google-perftools \
-%endif
   --disable-silent-rules --with-portfolio --with-abc --with-abc-dir=%{_prefix} \
   --with-readline --without-compat
 
@@ -248,6 +242,10 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Fri Mar 20 2015 Jerry James <loganjerry@gmail.com> - 1.4-3
+- Don't use perftools at all due to random weirdness on multiple platforms
+- Also Obsoletes/Provides lfsc-devel
+
 * Wed Mar 11 2015 Jerry James <loganjerry@gmail.com> - 1.4-2
 - Add -boolean, -minisat, and -signed patches to fix test failures
 - Fix boost detection with g++ 5.0
