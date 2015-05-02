@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -242,6 +242,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Sat May 02 2015 Kalev Lember <kalevlember@gmail.com> - 1.4-4
+- Rebuilt for GCC 5 C++11 ABI change
+
 * Fri Mar 20 2015 Jerry James <loganjerry@gmail.com> - 1.4-3
 - Don't use perftools at all due to random weirdness on multiple platforms
 - Also Obsoletes/Provides lfsc-devel
