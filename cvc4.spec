@@ -114,13 +114,13 @@ patch -p0 -T < %{PATCH0}
 %patch4
 
 # Don't change the build flags we want to use, avoid hardcoded rpaths, adapt to
-# antlr 3.5, and allow boost to use g++ 5.0.
+# antlr 3.5, and allow boost to use g++ 5.0 and higher.
 sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
     -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
     -e 's,\([^.]\)3\.4,\13.5,g' \
     -e 's,\$ac_cpp conftest,$ac_cpp -P conftest,' \
-    -e 's,\(__GNUC__ == \)4\(.*_MINOR__ == \)8\(.*\)gcc48,\15\20\3gcc50,' \
+    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 6 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\'\
     -i configure
 
 # Change the Java installation paths for Fedora
@@ -152,7 +152,7 @@ else
 CPPFLAGS+=" -DLIN"
 fi
 export CFLAGS="%{optflags} -fsigned-char"
-export CXXFLAGS="%{optflags} -fsigned-char"
+export CXXFLAGS="%{optflags} -fsigned-char -std=gnu++98"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
   --disable-silent-rules --with-portfolio --with-abc --with-abc-dir=%{_prefix} \
   --with-readline --without-compat
