@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -242,6 +242,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Tue May 17 2016 Jonathan Wakely <jwakely@redhat.com> - 1.4-11
+- Rebuilt for linker errors in boost (#1331983)
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.4-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
