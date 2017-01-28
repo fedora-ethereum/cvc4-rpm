@@ -17,7 +17,7 @@ Summary:        Automatic theorem prover for SMT problems
 # - All other files are distributed under the MIT license
 # But we link with readline, so it all gets subsumed by GPLv3+ anyway.
 License:        GPLv3+
-URL:            http://cvc4.cs.nyu.edu/web/
+URL:            http://cvc4.cs.stanford.edu/
 Source0:        http://cvc4.cs.nyu.edu/builds/src/%{name}-%{version}.tar.gz
 # Fix some doxygen problems.  Upstream plans to fix this differently.
 Patch0:         %{name}-doxygen.patch
@@ -37,20 +37,17 @@ BuildRequires:  boost-devel
 BuildRequires:  chrpath
 BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
-BuildRequires:  ghostscript
+BuildRequires:  gcc-c++
+BuildRequires:  ghostscript-core
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
 BuildRequires:  perl
-BuildRequires:  python
+BuildRequires:  python2
 BuildRequires:  readline-devel
 BuildRequires:  swig
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-
-# This can be removed once F-22 reaches EOL
-Obsoletes:      lfsc < 1.0-1%{?dist}
-Provides:       lfsc = %{version}-%{release}
 
 %description
 CVC4 is an efficient open-source automatic theorem prover for
@@ -72,10 +69,6 @@ its use for research or commercial purposes.
 %package devel
 Summary:        Headers and other files for developing with %{name}
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-
-# This can be removed once F-22 reaches EOL
-Obsoletes:      lfsc-devel < 1.0-1%{?dist}
-Provides:       lfsc-devel = %{version}-%{release}
 
 %description devel
 Header files and library links for developing applications that use %{name}.
