@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.4
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -235,6 +235,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Tue Feb 07 2017 Kalev Lember <klember@redhat.com> - 1.4-13
+- Rebuilt for Boost 1.63
+
 * Thu Jan 12 2017 Igor Gnatenko <ignatenko@redhat.com> - 1.4-12
 - Rebuild for readline 7.x
 
