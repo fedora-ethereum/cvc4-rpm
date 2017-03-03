@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.4
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -113,11 +113,13 @@ sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
     -e 's,\([^.]\)3\.4,\13.5,g' \
     -e 's,\$ac_cpp conftest,$ac_cpp -P conftest,' \
-    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 6 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\'\
+    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 7 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
     -i configure
 
-# Change the Java installation paths for Fedora
-sed -i "s|^\(javalibdir =.*\)jni|\1java/%{name}|" src/bindings/Makefile.in
+# Change the Java installation paths for Fedora and fix FTBFS
+sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
+    -e 's/ -Wno-all//' \
+    -i src/bindings/Makefile.in
 
 # Fix access to an uninitialized variable
 sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
@@ -235,6 +237,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Fri Mar  3 2017 Jerry James <loganjerry@gmail.com> - 1.4-14
+- Fix FTBFS (bz 1427891)
+
 * Tue Feb 07 2017 Kalev Lember <klember@redhat.com> - 1.4-13
 - Rebuilt for Boost 1.63
 
