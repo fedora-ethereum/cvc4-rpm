@@ -42,7 +42,7 @@ BuildRequires:  ghostscript-core
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
-BuildRequires:  perl
+BuildRequires:  perl-interpreter
 BuildRequires:  python2
 BuildRequires:  readline-devel
 BuildRequires:  swig
