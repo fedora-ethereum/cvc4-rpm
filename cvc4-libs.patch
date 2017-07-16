@@ -1,6 +1,6 @@
---- ./configure.orig	2014-07-13 11:47:37.469270988 -0600
-+++ ./configure	2015-01-01 21:00:00.000000000 -0700
-@@ -19368,7 +19368,7 @@ See \`config.log' for more details" "$LI
+--- configure.orig	2017-07-10 11:00:38.291785982 -0600
++++ configure	2017-07-15 12:34:56.893412904 -0600
+@@ -20324,7 +20324,7 @@ See \`config.log' for more details" "$LI
  
  fi
  
@@ -9,7 +9,7 @@
      { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
  $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
  as_fn_error $? "either $ABC_HOME is not an abc source tree or it's not yet built
-@@ -19377,15 +19377,15 @@ See \`config.log' for more details" "$LI
+@@ -20333,15 +20333,15 @@ See \`config.log' for more details" "$LI
  
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for arch_flags to use with libabc" >&5
  $as_echo_n "checking for arch_flags to use with libabc... " >&6; }
@@ -28,3 +28,20 @@
    LDFLAGS="$LDFLAGS $ABC_LDFLAGS"
    ac_fn_c_check_header_mongrel "$LINENO" "base/abc/abc.h" "ac_cv_header_base_abc_abc_h" "$ac_includes_default"
  if test "x$ac_cv_header_base_abc_abc_h" = xyes; then :
+@@ -21274,14 +21274,14 @@ See \`config.log' for more details" "$LI
+ fi
+ 
+ 
+-  if ! test -d "$CRYPTOMINISAT_HOME" || ! test -x "$CRYPTOMINISAT_HOME/install/bin/cryptominisat" ; then
++  if ! test -d "$CRYPTOMINISAT_HOME" ; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+ as_fn_error $? "either $CRYPTOMINISAT_HOME is not an cryptominisat install tree or it's not yet built
+ See \`config.log' for more details" "$LINENO" 5; }
+   fi
+ 
+-  CPPFLAGS="$CPPFLAGS -I$CRYPTOMINISAT_HOME/install/include"
++  CPPFLAGS="$CPPFLAGS -I/usr/include/cryptominisat4"
+ 
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to link cryptominisat" >&5
+ $as_echo_n "checking how to link cryptominisat... " >&6; }

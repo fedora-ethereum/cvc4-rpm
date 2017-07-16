@@ -2,8 +2,8 @@
 # we currently build without glpk support.
 
 Name:           cvc4
-Version:        1.4
-Release:        15%{?dist}
+Version:        1.5
+Release:        1%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -18,23 +18,20 @@ Summary:        Automatic theorem prover for SMT problems
 # But we link with readline, so it all gets subsumed by GPLv3+ anyway.
 License:        GPLv3+
 URL:            http://cvc4.cs.stanford.edu/
-Source0:        http://cvc4.cs.nyu.edu/builds/src/%{name}-%{version}.tar.gz
+Source0:        http://cvc4.cs.stanford.edu/downloads/builds/src/%{name}-%{version}.tar.gz
 # Fix some doxygen problems.  Upstream plans to fix this differently.
 Patch0:         %{name}-doxygen.patch
-# Adapt to the way the Fedora ABC package is constructed.
-Patch1:         %{name}-abc.patch
-# Fix some mixed signed/unsigned comparisons
-Patch2:         %{name}-signed.patch
-# Fix some broken boolean expressions
-Patch3:         %{name}-boolean.patch
-# Fix out-of-bounds array accesses in the minisat code
-Patch4:         %%{name}-minisat.patch
+# Adapt to the way the Fedora libraries are constructed.
+Patch1:         %{name}-libs.patch
+# Fix undefined symbols in the JNI interface
+Patch2:         %{name}-constant.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
 BuildRequires:  boost-devel
 BuildRequires:  chrpath
+BuildRequires:  cryptominisat4-devel
 BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
 BuildRequires:  gcc-c++
@@ -42,6 +39,7 @@ BuildRequires:  ghostscript-core
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
+BuildRequires:  libtool
 BuildRequires:  perl-interpreter
 BuildRequires:  python2
 BuildRequires:  readline-devel
@@ -98,13 +96,9 @@ Java interface to %{name}.
 
 %prep
 %setup -q
-# The rpm patch macro doesn't understand -T, and we need it to to avoid
-# regenerating the very files we're trying to patch.
-patch -p0 -T < %{PATCH0}
+%patch0
 %patch1
 %patch2
-%patch3
-%patch4
 
 # Don't change the build flags we want to use, avoid hardcoded rpaths, adapt to
 # antlr 3.5, and allow boost to use g++ 5.0 and higher.
@@ -113,17 +107,17 @@ sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
     -e 's,\([^.]\)3\.4,\13.5,g' \
     -e 's,\$ac_cpp conftest,$ac_cpp -P conftest,' \
-    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 7 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
+    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 7 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
     -i configure
 
 # Change the Java installation paths for Fedora and fix FTBFS
 sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
     -e 's/ -Wno-all//' \
-    -i src/bindings/Makefile.in
+    -i src/bindings/Makefile.am
 
 # Fix access to an uninitialized variable
 sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
-    -i src/parser/cvc/generated/CvcParser.c
+    -i src/parser/cvc/CvcParser.c
 
 # Make lfsc documentation available
 cp -p proofs/lfsc_checker/AUTHORS AUTHORS.lfsc
@@ -139,6 +133,9 @@ for fil in $(find . -name Makefile\*); do
   sed -i 's/$(install_sh) -c/$(install_sh) -p/' $fil
 done
 
+# Fix an include path in the tests
+sed -i 's,@CXXTEST@,%{_includedir}/cxxtest,' test/unit/Makefile.am
+
 %build
 export CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
 if [ "%{__isa_bits}" == "64" ]; then
@@ -147,10 +144,11 @@ else
 CPPFLAGS+=" -DLIN"
 fi
 export CFLAGS="%{optflags} -fsigned-char"
-export CXXFLAGS="%{optflags} -fsigned-char -std=gnu++98"
+export CXXFLAGS="%{optflags} -fsigned-char"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
   --disable-silent-rules --with-portfolio --with-abc --with-abc-dir=%{_prefix} \
-  --with-readline --without-compat
+  --with-cryptominisat --with-cryptominisat-dir=%{_prefix} --with-readline \
+  --without-compat
 
 # Workaround libtool reordering -Wl,--as-needed after all the libraries
 BUILDS=$(echo $PWD/builds/*linux*/*abc*)
@@ -209,7 +207,17 @@ sed -e 's/\(units.*:\) all/\1/' \
     -e 's/\(regress.*:\) all/\1/' \
     -i $BUILDS/Makefile $BUILDS/Makefile.builds
 
-export LD_LIBRARY_PATH=$PWD/builds%{_libdir}
+# Fix bad include paths in the test code
+sed 's,/barrett/scratch.*/expr/,./,' \
+  test/unit/expr/expr_manager_public.cpp \
+  test/unit/expr/expr_public.cpp \
+  test/unit/expr/type_cardinality_public.cpp
+
+# Fix the Java test's access to the JNI object it needs
+sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so"),' \
+    -i test/system/CVC4JavaTest.java
+
+export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 make check 
 
 %files
@@ -237,6 +245,12 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Sat Jul 15 2017 Jerry James <loganjerry@gmail.com> - 1.5-1
+- New upstream release
+- Drop upstreamed patches: -signed, -boolean, -minisat
+- Add -constant patch to fix undefined symbols in the JNI shared object
+- Add cryptominisat4 support
+
 * Mon May 15 2017 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-15
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_27_Mass_Rebuild
 
