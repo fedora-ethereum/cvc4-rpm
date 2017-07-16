@@ -114,6 +114,9 @@ sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
 sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
     -e 's/ -Wno-all//' \
     -i src/bindings/Makefile.am
+sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
+    -e 's/ -Wno-all//' \
+    -i src/bindings/Makefile.in
 
 # Fix access to an uninitialized variable
 sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
