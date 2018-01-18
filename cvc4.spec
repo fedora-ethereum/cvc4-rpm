@@ -35,7 +35,7 @@ BuildRequires:  cryptominisat4-devel
 BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
 BuildRequires:  gcc-c++
-BuildRequires:  ghostscript-core
+BuildRequires:  ghostscript
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
