@@ -1,0 +1,126 @@
+--- config/abc.m4.orig	2017-06-23 15:54:52.168048722 -0600
++++ config/abc.m4	2017-08-20 20:14:22.805836603 -0600
+@@ -26,21 +26,17 @@ elif test -n "$with_abc"; then
+       fi
+     ]
+   )
+-  if ! test -d "$ABC_HOME" || ! test -x "$ABC_HOME/arch_flags"; then
++  if ! test -d "$ABC_HOME" ; then
+     AC_MSG_FAILURE([either $ABC_HOME is not an abc source tree or it's not yet built])
+   fi
+ 
+-  AC_MSG_CHECKING([for arch_flags to use with libabc])
+-  libabc_arch_flags="$("$ABC_HOME/arch_flags")"
+-  AC_MSG_RESULT([$libabc_arch_flags])
+-  CVC4CPPFLAGS="${CVC4CPPFLAGS:+$CVC4CPPFLAGS }-I$ABC_HOME/src $libabc_arch_flags"
+-  ABC_LDFLAGS="-L$ABC_HOME"
++  CVC4CPPFLAGS="${CVC4CPPFLAGS:+$CVC4CPPFLAGS }-I/usr/include/abc"
++  ABC_LDFLAGS=""
+ 
+   dnl Try a bunch of combinations until something works :-/
+   cvc4_save_LDFLAGS="$LDFLAGS"
+   ABC_LIBS=
+-  CPPFLAGS="$CPPFLAGS -I$ABC_HOME/src $libabc_arch_flags"
+-  LDFLAGS="$LDFLAGS $ABC_LDFLAGS"
++  CPPFLAGS="$CPPFLAGS -I/usr/include/abc"
+   AC_CHECK_HEADER([base/abc/abc.h], [], [AC_MSG_FAILURE([cannot find abc.h, the ABC header!])])
+   AC_MSG_CHECKING([how to link abc])
+   CVC4_TRY_ABC_WITH([])
+--- config/antlr.m4.orig	2017-06-23 15:54:52.169048740 -0600
++++ config/antlr.m4	2017-08-20 16:50:37.987445083 -0600
+@@ -30,7 +30,7 @@ been generated already. To obtain ANTLR
+     ANTLR_VERSION="`$ANTLR -version 2>&1 | sed 's,.*Version  *\([[0-9.]]*\).*,\1,'`"
+     case "$ANTLR_VERSION" in
+       3.2|3.2.*) ANTLR_VERSION=3.2 ;;
+-      3.4|3.4.*) ANTLR_VERSION=3.4 ;;
++      3.5|3.5.*) ANTLR_VERSION=3.5 ;;
+       *) AC_MSG_WARN([unknown version of antlr: $ANTLR_VERSION]);;
+     esac
+   fi
+@@ -121,8 +121,8 @@ AC_DEFUN([AC_LIB_ANTLR],[
+               }
+             ])],
+             [
+-              AC_MSG_RESULT([found it (must be antlr3 3.4 or similar)])
+-              if test -n "$ANTLR_VERSION" -a "$ANTLR_VERSION" != 3.4; then
++              AC_MSG_RESULT([found it (must be antlr3 3.5 or similar)])
++              if test -n "$ANTLR_VERSION" -a "$ANTLR_VERSION" != 3.5; then
+                 AC_MSG_WARN([your antlr parser generator is version $ANTLR_VERSION, which doesn't match the library!])
+               fi
+             ],
+--- config/boost.m4.orig	2017-06-23 15:54:52.173048811 -0600
++++ config/boost.m4	2017-08-20 16:51:21.940334791 -0600
+@@ -71,7 +71,7 @@ dnl strip `\n' with backquotes, not the
+ dnl boost_cv_lib_version='1_37\r' for instance, which breaks
+ dnl everything else.
+ dnl Cannot use 'dnl' after [$4] because a trailing dnl may break AC_CACHE_CHECK
+-(eval "$ac_cpp conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
++(eval "$ac_cpp -P conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
+   grep -v "^#" |
+   tr -d '\r\n ' |
+   $SED -n -e "$1" >conftest.i 2>&1],
+--- config/cryptominisat.m4.orig	2017-06-23 15:54:52.175048847 -0600
++++ config/cryptominisat.m4	2017-08-20 20:37:04.578276194 -0600
+@@ -27,11 +27,11 @@ elif test -n "$with_cryptominisat"; then
+     ]
+   )
+ 
+-  if ! test -d "$CRYPTOMINISAT_HOME" || ! test -x "$CRYPTOMINISAT_HOME/install/bin/cryptominisat" ; then
++  if ! test -d "$CRYPTOMINISAT_HOME" ; then
+     AC_MSG_FAILURE([either $CRYPTOMINISAT_HOME is not an cryptominisat install tree or it's not yet built])
+   fi
+ 
+-  CPPFLAGS="$CPPFLAGS -I$CRYPTOMINISAT_HOME/install/include"
++  CPPFLAGS="$CPPFLAGS -I/usr/include/cryptominisat4"
+   
+   AC_MSG_CHECKING([how to link cryptominisat])
+ 
+@@ -47,7 +47,7 @@ elif test -n "$with_cryptominisat"; then
+     have_libcryptominisat=1
+   fi
+ 
+-  CRYPTOMINISAT_LDFLAGS="-L$CRYPTOMINISAT_HOME/install/lib"
++  CRYPTOMINISAT_LDFLAGS=""
+ 
+ else
+   AC_MSG_RESULT([no, user didn't request cryptominisat])
+@@ -67,7 +67,7 @@ if test -z "$CRYPTOMINISAT_LIBS"; then
+   cvc4_save_LDFLAGS="$LDFLAGS"
+   cvc4_save_CPPFLAGS="$CPPFLAGS"
+ 
+-  LDFLAGS="-L$CRYPTOMINISAT_HOME/install/lib"
++  LDFLAGS=""
+   LIBS="-lcryptominisat4 $1"
+ 
+   AC_LINK_IFELSE(
+--- configure.ac.orig	2017-07-10 11:00:06.970280980 -0600
++++ configure.ac	2017-08-20 16:49:09.874665731 -0600
+@@ -257,7 +257,7 @@ if test $cross_compiling = "no"; then
+   AC_MSG_CHECKING([whether C++ exceptions work])
+   AC_LANG_PUSH([C++])
+   AC_RUN_IFELSE(
+-    AC_LANG_PROGRAM([#include <exception>], [[
++    [AC_LANG_PROGRAM([#include <exception>], [[
+       int result = 1;
+       try {
+         throw std::exception();
+@@ -265,7 +265,7 @@ if test $cross_compiling = "no"; then
+         result = 0;
+       }
+       return result;
+-    ]]),
++    ]])],
+     [AC_MSG_RESULT([yes])],
+     [AC_MSG_ERROR([C++ exceptions do not work.])]
+   )
+@@ -612,10 +612,6 @@ fi
+ 
+ AC_MSG_RESULT([$enable_debug_symbols])
+ 
+-if test "$enable_debug_symbols" = yes; then
+-  CVC4CXXFLAGS="${CVC4CXXFLAGS:+$CVC4CXXFLAGS }-ggdb3"
+-  CVC4CFLAGS="${CVC4CFLAGS:+$CVC4CFLAGS }-ggdb3"
+-fi
+ 
+ AC_MSG_CHECKING([whether to include statistics are turned on in libcvc4])
+ 

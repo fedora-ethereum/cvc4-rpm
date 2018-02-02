@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -25,6 +25,8 @@ Patch0:         %{name}-doxygen.patch
 Patch1:         %{name}-libs.patch
 # Fix undefined symbols in the JNI interface
 Patch2:         %{name}-constant.patch
+# Fix various autoconf problems
+Patch3:         %{name}-autoconf.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -99,14 +101,19 @@ Java interface to %{name}.
 %patch0
 %patch1
 %patch2
+%patch3
 
-# Don't change the build flags we want to use, avoid hardcoded rpaths, adapt to
-# antlr 3.5, and allow boost to use g++ 5.0 and higher.
-sed -e '/^if test "$enable_debug_symbols"/,/fi/d' \
-    -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
+# Regenerate due to patch 3
+autoreconf -fi
+
+# Do not override Fedora's optimization settings
+sed -i 's/-O3/-O2/' \
+  src/prop/minisat/mtl/template.mk src/prop/minisat/Makefile \
+  src/prop/bvminisat/mtl/template.mk src/prop/bvminisat/Makefile
+
+# Avoid hardcoded rpaths and allow boost to use g++ 5.0 and higher.
+sed -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
-    -e 's,\([^.]\)3\.4,\13.5,g' \
-    -e 's,\$ac_cpp conftest,$ac_cpp -P conftest,' \
     -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 7 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
     -i configure
 
@@ -248,6 +255,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Thu Feb  1 2018 Jerry James <loganjerry@gmail.com> - 1.5-5
+- Fix FTBFS with automake 1.5.1 (bz 1482152)
+
 * Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.5-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
