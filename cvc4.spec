@@ -114,7 +114,8 @@ sed -i 's/-O3/-O2/' \
 # Avoid hardcoded rpaths and allow boost to use g++ 5.0 and higher.
 sed -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
     -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
-    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 7 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
+    -e 's,OPTLEVEL=3,OPTLEVEL=2,g' \
+    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 8 && !defined __ICC @ gcc80" \\\n    "defined __GNUC__ && __GNUC__ == 7 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
     -i configure
 
 # Change the Java installation paths for Fedora and fix FTBFS
