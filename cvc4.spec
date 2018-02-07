@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -256,6 +256,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.5-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Thu Feb  1 2018 Jerry James <loganjerry@gmail.com> - 1.5-5
 - Fix FTBFS with automake 1.5.1 (bz 1482152)
 
