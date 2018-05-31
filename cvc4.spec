@@ -204,9 +204,7 @@ ln -s $PWD/src/options/options_holder_template.h $BUILDS/src/options
 ln -s $PWD/src/options/options_template.cpp $BUILDS/src/options
 ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
 
-%post libs -p /sbin/ldconfig
-
-%postun libs -p /sbin/ldconfig
+%ldconfig_scriptlets libs
 
 %check
 # The tests use a large amount of stack space
