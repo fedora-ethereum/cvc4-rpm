@@ -1,23 +1,14 @@
---- src/base/tls.h.in.orig	2017-07-07 16:15:02.906706503 -0600
-+++ src/base/tls.h.in	2017-07-12 19:10:48.346237676 -0600
-@@ -1,5 +1,5 @@
- /*********************                                                        */
--/*! \file tls.h.in
-+/*! \file tls.h
-  ** \verbatim
-  ** Top contributors (to current version):
-  **   Morgan Deters, ACSYS, Paul Meng
---- src/expr/expr_manager_template.cpp.orig	2017-07-07 16:15:02.958707425 -0600
-+++ src/expr/expr_manager_template.cpp	2017-07-12 19:09:30.706471535 -0600
+--- src/expr/expr_manager_template.cpp.orig	2018-06-25 15:13:17.952914014 -0600
++++ src/expr/expr_manager_template.cpp	2018-07-05 14:39:39.136284939 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file expr_manager_template.cpp
 +/*! \file expr_manager.cpp
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Tim King, Christopher L. Conway
---- src/expr/expr_manager_template.h.orig	2017-07-07 16:15:02.959707443 -0600
-+++ src/expr/expr_manager_template.h	2017-07-12 19:07:01.962904981 -0600
+  **   Morgan Deters, Christopher L. Conway, Dejan Jovanovic
+--- src/expr/expr_manager_template.h.orig	2018-06-25 15:13:17.953914032 -0600
++++ src/expr/expr_manager_template.h	2018-07-05 14:39:39.137284937 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file expr_manager_template.h
@@ -25,57 +16,57 @@
   ** \verbatim
   ** Top contributors (to current version):
   **   Morgan Deters, Dejan Jovanovic, Christopher L. Conway
---- src/expr/expr_template.h.orig	2017-07-07 16:15:02.962707496 -0600
-+++ src/expr/expr_template.h	2017-07-12 19:07:17.361860105 -0600
+--- src/expr/expr_template.h.orig	2018-06-25 15:13:17.958914119 -0600
++++ src/expr/expr_template.h	2018-07-05 14:39:39.138284935 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file expr_template.h
 +/*! \file expr.h
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Dejan Jovanovic, Christopher L. Conway
---- src/expr/kind_template.h.orig	2017-07-07 16:15:02.964707531 -0600
-+++ src/expr/kind_template.h	2017-07-12 19:07:36.314804876 -0600
+  **   Morgan Deters, Dejan Jovanovic, Aina Niemetz
+--- src/expr/kind_template.h.orig	2018-06-25 15:13:17.962914189 -0600
++++ src/expr/kind_template.h	2018-07-05 14:39:39.138284935 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file kind_template.h
 +/*! \file kind.h
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Dejan Jovanovic, Paul Meng
---- src/expr/metakind_template.h.orig	2017-07-07 16:15:02.966707567 -0600
-+++ src/expr/metakind_template.h	2017-07-12 19:08:17.474684935 -0600
+  **   Morgan Deters, Dejan Jovanovic, Andres Noetzli
+--- src/expr/metakind_template.h.orig	2018-06-25 15:13:17.966914259 -0600
++++ src/expr/metakind_template.h	2018-07-05 14:39:39.139284933 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file metakind_template.h
 +/*! \file metakind.h
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Paul Meng, Tim King
---- src/expr/type_checker_template.cpp.orig	2017-07-07 16:15:02.991708010 -0600
-+++ src/expr/type_checker_template.cpp	2017-07-12 19:08:59.234563245 -0600
+  **   Morgan Deters, Andres Noetzli, Tim King
+--- src/expr/type_checker_template.cpp.orig	2018-06-25 15:13:18.004914924 -0600
++++ src/expr/type_checker_template.cpp	2018-07-05 14:39:39.139284933 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file type_checker_template.cpp
 +/*! \file type_checker.cpp
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Tim King, Paul Meng
---- src/expr/type_properties_template.h.orig	2017-07-07 16:15:02.995708080 -0600
-+++ src/expr/type_properties_template.h	2017-07-12 19:08:31.650643627 -0600
+  **   Morgan Deters, Tim King, Andrew Reynolds
+--- src/expr/type_properties_template.h.orig	2018-06-25 15:13:18.007914976 -0600
++++ src/expr/type_properties_template.h	2018-07-05 14:39:39.139284933 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file type_properties_template.h
 +/*! \file type_properties.h
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Paul Meng, Tim King
---- src/util/rational.h.in.orig	2017-07-07 16:15:03.587718569 -0600
-+++ src/util/rational.h.in	2017-07-12 19:11:15.186152866 -0600
+  **   Morgan Deters, Tim King
+--- src/util/rational.h.in.orig	2018-06-25 15:13:19.197935796 -0600
++++ src/util/rational.h.in	2018-07-05 14:39:39.139284933 -0600
 @@ -1,5 +1,5 @@
  /*********************                                                        */
 -/*! \file rational.h.in
 +/*! \file rational.h
   ** \verbatim
   ** Top contributors (to current version):
-  **   Morgan Deters, Paul Meng, Tim King
+  **   Morgan Deters, Tim King

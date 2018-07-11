@@ -2,8 +2,8 @@
 # we currently build without glpk support.
 
 Name:           cvc4
-Version:        1.5
-Release:        6%{?dist}
+Version:        1.6
+Release:        1%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -11,29 +11,30 @@ Summary:        Automatic theorem prover for SMT problems
 #   o src/util/channel.h
 #   o examples/hashsmt/sha1.hpp
 # - Files containing code under the BSD license:
-#   o proofs/lfsc_checker/*
 #   o src/parser/antlr_input_imports.cpp
 #   o src/parser/bounded_token_buffer.cpp
 # - All other files are distributed under the MIT license
-# But we link with readline, so it all gets subsumed by GPLv3+ anyway.
-License:        GPLv3+
+License:        Boost and BSD and MIT
 URL:            http://cvc4.cs.stanford.edu/
 Source0:        http://cvc4.cs.stanford.edu/downloads/builds/src/%{name}-%{version}.tar.gz
 # Fix some doxygen problems.  Upstream plans to fix this differently.
 Patch0:         %{name}-doxygen.patch
-# Adapt to the way the Fedora libraries are constructed.
-Patch1:         %{name}-libs.patch
-# Fix undefined symbols in the JNI interface
-Patch2:         %{name}-constant.patch
 # Fix various autoconf problems
-Patch3:         %{name}-autoconf.patch
+Patch1:         %{name}-autoconf.patch
+# Fix detection of cadical
+Patch2:         %{name}-cadical.patch
+# Fix detection of symfpu
+Patch3:         %{name}-symfpu.patch
+# Fix out-of-bounds vector accesses
+Patch4:         %{name}-vec.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
 BuildRequires:  boost-devel
+BuildRequires:  cadical-devel
 BuildRequires:  chrpath
-BuildRequires:  cryptominisat4-devel
+BuildRequires:  cryptominisat-devel
 BuildRequires:  cxxtest
 BuildRequires:  doxygen-latex
 BuildRequires:  gcc-c++
@@ -41,11 +42,13 @@ BuildRequires:  ghostscript
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
+BuildRequires:  lfsc-devel
 BuildRequires:  libtool
 BuildRequires:  perl-interpreter
 BuildRequires:  python2
 BuildRequires:  readline-devel
 BuildRequires:  swig
+BuildRequires:  symfpu-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
@@ -97,13 +100,9 @@ Requires:       jpackage-utils
 Java interface to %{name}.
 
 %prep
-%setup -q
-%patch0
-%patch1
-%patch2
-%patch3
+%autosetup -p0
 
-# Regenerate due to patch 3
+# Regenerate configure due to patch 1
 autoreconf -fi
 
 # Do not override Fedora's optimization settings
@@ -130,12 +129,6 @@ sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
 sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
     -i src/parser/cvc/CvcParser.c
 
-# Make lfsc documentation available
-cp -p proofs/lfsc_checker/AUTHORS AUTHORS.lfsc
-cp -p proofs/lfsc_checker/COPYING COPYING.lfsc
-cp -p proofs/lfsc_checker/NEWS NEWS.lfsc
-cp -p proofs/lfsc_checker/README README.lfsc
-
 # Help the documentation generator
 cp -p COPYING src/bindings/compat/c
 
@@ -149,7 +142,7 @@ sed -i 's,@CXXTEST@,%{_includedir}/cxxtest,' test/unit/Makefile.am
 
 %build
 export CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
-if [ "%{__isa_bits}" == "64" ]; then
+if [ "%{__isa_bits}" = "64" ]; then
 CPPFLAGS+=" -DLIN64"
 else
 CPPFLAGS+=" -DLIN"
@@ -157,9 +150,13 @@ fi
 export CFLAGS="%{optflags} -fsigned-char"
 export CXXFLAGS="%{optflags} -fsigned-char"
 %configure --enable-gpl --enable-proof --enable-language-bindings=all \
-  --disable-silent-rules --with-portfolio --with-abc --with-abc-dir=%{_prefix} \
-  --with-cryptominisat --with-cryptominisat-dir=%{_prefix} --with-readline \
-  --without-compat
+  --disable-silent-rules --with-portfolio --without-compat \
+  --with-abc --with-abc-dir=%{_prefix} \
+  --with-cadical --with-cadical-dir=%{_prefix} \
+  --with-cryptominisat --with-cryptominisat-dir=%{_prefix} \
+  --with-lfsc --with-lfsc-dir=%{_prefix} \
+  --with-symfpu --with-symfpu-dir=%{_prefix} \
+  --with-readline
 
 # Workaround libtool reordering -Wl,--as-needed after all the libraries
 BUILDS=$(echo $PWD/builds/*linux*/*abc*)
@@ -230,14 +227,14 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 make check 
 
 %files
-%doc AUTHORS AUTHORS.lfsc NEWS NEWS.lfsc README README.lfsc RELEASE-NOTES THANKS
-%license COPYING.lfsc
+%doc AUTHORS NEWS README RELEASE-NOTES THANKS
 %{_bindir}/*
 %{_datadir}/%{name}/
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 
 %files doc
+%license COPYING
 %doc doc/doxygen/*
 
 %files libs
@@ -254,6 +251,9 @@ make check
 %{_jnidir}/%{name}/
 
 %changelog
+* Tue Jul 10 2018 Jerry James <loganjerry@gmail.com> - 1.6-1
+- New upstream release
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.5-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 

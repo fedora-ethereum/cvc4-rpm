@@ -1,0 +1,50 @@
+--- config/cadical.m4.orig	2018-06-25 15:13:17.541906824 -0600
++++ config/cadical.m4	2018-07-06 16:08:10.850078221 -0600
+@@ -21,7 +21,7 @@ elif test -n "$with_cadical"; then
+       [path to top level of CaDiCaL source tree]
+     ),
+     CADICAL_HOME="$withval",
+-    [ if test -z "$CADICAL_HOME" && ! test -e "$ac_abs_confdir/cadical/build/libcadical.a"; then
++    [ if test -z "$CADICAL_HOME"; then
+         AC_MSG_FAILURE([must give --with-cadical-dir=PATH, define environment variable CADICAL_HOME, or use contrib/get-cadical to setup CaDiCaL for CVC4!])
+       fi
+     ]
+@@ -36,7 +36,7 @@ elif test -n "$with_cadical"; then
+     AC_MSG_RESULT([no])
+   fi
+ 
+-  if ! test -d "$CADICAL_HOME" || ! test -e "$CADICAL_HOME/build/libcadical.a" ; then
++  if ! test -d "$CADICAL_HOME" ; then
+     AC_MSG_FAILURE([either $CADICAL_HOME is not a CaDiCaL source tree or it's not yet built $CADICAL_HOME/build/libcadical.a])
+   fi
+ 
+@@ -51,7 +51,7 @@ elif test -n "$with_cadical"; then
+     have_libcadical=1
+   fi
+ 
+-  CADICAL_LDFLAGS="-L$CADICAL_HOME/build"
++  CADICAL_LDFLAGS=""
+ 
+ else
+   AC_MSG_RESULT([no, user didn't request CaDiCaL])
+@@ -68,11 +68,7 @@ if test -z "$CADICAL_LIBS"; then
+   AC_LANG_PUSH([C++])
+ 
+   cvc4_save_LIBS="$LIBS"
+-  cvc4_save_LDFLAGS="$LDFLAGS"
+-  cvc4_save_CPPFLAGS="$CPPFLAGS"
+ 
+-  LDFLAGS="-L$CADICAL_HOME/build"
+-  CPPFLAGS="$CPPFLAGS -I$CADICAL_HOME/src"
+   LIBS="-lcadical"
+ 
+   AC_LINK_IFELSE(
+@@ -80,8 +76,6 @@ if test -z "$CADICAL_LIBS"; then
+       [[CaDiCaL::Solver test();]])], [CADICAL_LIBS="-lcadical"],
+     [CADICAL_LIBS=])
+ 
+-  LDFLAGS="$cvc4_save_LDFLAGS"
+-  CPPFLAGS="$cvc4_save_CPPFLAGS"
+   LIBS="$cvc4_save_LIBS"
+ 
+   AC_LANG_POP([C++])
