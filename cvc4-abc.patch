@@ -22,7 +22,7 @@
 -find_program(ABC_ARCH_FLAGS_PROG
 -             NAMES arch_flags
 -             PATHS ${ABC_HOME}
-+             PATHS /usr/lib64
++             PATHS /usr/lib64 /usr/lib
               NO_DEFAULT_PATH)
  
 -if(ABC_ARCH_FLAGS_PROG)

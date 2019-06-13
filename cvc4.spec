@@ -114,6 +114,11 @@ if [ "%{_lib}" = "lib64" ]; then
   sed -i 's/DESTINATION lib/&64/' src/CMakeLists.txt src/parser/CMakeLists.txt
 fi
 
+# One test exhausts all memory on 32-bit platforms; skip it
+%ifarch %{arm} %{ix86}
+sed -i '/replaceall-len-c/d' test/regress/CMakeLists.txt
+%endif
+
 %build
 export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
 export CXXFLAGS="$CFLAGS"
@@ -166,8 +171,11 @@ mkdir -p %{buildroot}%{_jnidir}/%{name}
 cp -p src/bindings/java/libcvc4jni.so %{buildroot}%{_jnidir}/%{name}
 
 %check
-# The tests use a large amount of stack space
+# The tests use a large amount of stack space.
+# Only do this on s390x to workaround bz 1688841.
+%ifarch s390x
 ulimit -s unlimited
+%endif
 
 # Fix the Java test's access to the JNI object it needs
 sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so"),' \
