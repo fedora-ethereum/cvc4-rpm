@@ -2,8 +2,8 @@
 # we currently build without glpk support.
 
 Name:           cvc4
-Version:        1.6
-Release:        6%{?dist}
+Version:        1.7
+Release:        1%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -16,27 +16,23 @@ Summary:        Automatic theorem prover for SMT problems
 # - All other files are distributed under the MIT license
 License:        Boost and BSD and MIT
 URL:            http://cvc4.cs.stanford.edu/
-Source0:        http://cvc4.cs.stanford.edu/downloads/builds/src/%{name}-%{version}.tar.gz
-# Fix some doxygen problems.  Upstream plans to fix this differently.
-Patch0:         %{name}-doxygen.patch
-# Fix various autoconf problems
-Patch1:         %{name}-autoconf.patch
-# Fix detection of cadical
-Patch2:         %{name}-cadical.patch
-# Fix detection of symfpu
-Patch3:         %{name}-symfpu.patch
-# Fix out-of-bounds vector accesses
-Patch4:         %{name}-vec.patch
+Source0:        https://github.com/CVC4/CVC4/archive/%{version}/%{name}-%{version}.tar.gz
+# Fix detection of ABC
+Patch0:         %{name}-abc.patch
+# Do not override Fedora flags
+Patch1:         %{name}-flags.patch
+# Adapt to swig 4
+Patch2:         %{name}-swig4.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
 BuildRequires:  boost-devel
 BuildRequires:  cadical-devel
-BuildRequires:  chrpath
+BuildRequires:  cmake
 BuildRequires:  cryptominisat-devel
 BuildRequires:  cxxtest
-BuildRequires:  doxygen-latex
+BuildRequires:  drat2er-devel
 BuildRequires:  gcc-c++
 BuildRequires:  ghostscript
 BuildRequires:  gmp-devel
@@ -45,12 +41,16 @@ BuildRequires:  jpackage-utils
 BuildRequires:  lfsc-devel
 BuildRequires:  libtool
 BuildRequires:  perl-interpreter
-BuildRequires:  python2
+BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  swig
 BuildRequires:  symfpu-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+# This can be removed when Fedora 30 reaches EOL
+Obsoletes:      %{name}-doc < 1.7
+Provides:       %{name}-doc = %{version}-%{release}
 
 %description
 CVC4 is an efficient open-source automatic theorem prover for
@@ -76,13 +76,6 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 %description devel
 Header files and library links for developing applications that use %{name}.
 
-%package doc
-Summary:        Interface documentation for %{name}
-Provides:       bundled(jquery)
-
-%description doc
-Interface documentation for %{name}.
-
 %package libs
 Summary:        Library containing an automatic theorem prover for SMT problems
 
@@ -99,68 +92,66 @@ Requires:       jpackage-utils
 %description java
 Java interface to %{name}.
 
+%package python3
+Summary:        Python 3 interface to %{name}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+%description python3
+Python 3 interface to %{name}.
+
 %prep
-%autosetup -p0
+%autosetup -p0 -n CVC4-%{version}
 
-# Regenerate configure due to patch 1
-autoreconf -fi
+# The Java interface uses type punning
+sed -i '/include_directories/aadd_compile_options("-fno-strict-aliasing")' \
+    src/bindings/java/CMakeLists.txt
 
-# Do not override Fedora's optimization settings
-sed -i 's/-O3/-O2/' \
-  src/prop/minisat/mtl/template.mk src/prop/minisat/Makefile \
-  src/prop/bvminisat/mtl/template.mk src/prop/bvminisat/Makefile
+# The header file installation script does not know about DESTDIR
+sed -i 's/\${CMAKE_INSTALL_PREFIX}/\\$ENV{DESTDIR}&/' src/CMakeLists.txt
 
-# Avoid hardcoded rpaths and allow boost to use g++ 5.0 and higher.
-sed -e 's,^hardcode_libdir_flag_spec=.*,hardcode_libdir_flag_spec="",g' \
-    -e 's,runpath_var=LD_RUN_PATH,runpath_var=DIE_RPATH_DIE,g' \
-    -e 's,OPTLEVEL=3,OPTLEVEL=2,g' \
-    -e '/gcc48/i\    "defined __GNUC__ && __GNUC__ == 8 && !defined __ICC @ gcc80" \\\n    "defined __GNUC__ && __GNUC__ == 7 && !defined __ICC @ gcc70" \\\n    "defined __GNUC__ && __GNUC__ == 6 && !defined __ICC @ gcc60" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 3 && !defined __ICC @ gcc53" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 2 && !defined __ICC @ gcc52" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 1 && !defined __ICC @ gcc51" \\\n    "defined __GNUC__ && __GNUC__ == 5 && __GNUC_MINOR__ == 0 && !defined __ICC @ gcc50" \\' \
-    -i configure
-
-# Change the Java installation paths for Fedora and fix FTBFS
-sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
-    -e 's/ -Wno-all//' \
-    -i src/bindings/Makefile.am
-sed -e "s|^\(javalibdir =.*\)jni|\1java/%{name}|" \
-    -e 's/ -Wno-all//' \
-    -i src/bindings/Makefile.in
-
-# Fix access to an uninitialized variable
-sed -e 's/Kind k;/Kind k = kind::UNDEFINED_KIND;/' \
-    -i src/parser/cvc/CvcParser.c
-
-# Help the documentation generator
-cp -p COPYING src/bindings/compat/c
-
-# Preserve timestamps when installing
-for fil in $(find . -name Makefile\*); do
-  sed -i 's/$(install_sh) -c/$(install_sh) -p/' $fil
-done
-
-# Fix an include path in the tests
-sed -i 's,@CXXTEST@,%{_includedir}/cxxtest,' test/unit/Makefile.am
+# Fix installation directory on 64-bit arches
+if [ "%{_lib}" = "lib64" ]; then
+  sed -i 's/DESTINATION lib/&64/' src/CMakeLists.txt src/parser/CMakeLists.txt
+fi
 
 %build
-export CPPFLAGS="-I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
-if [ "%{__isa_bits}" = "64" ]; then
-CPPFLAGS+=" -DLIN64"
-else
-CPPFLAGS+=" -DLIN"
-fi
-export CFLAGS="%{optflags} -fsigned-char"
-export CXXFLAGS="%{optflags} -fsigned-char"
-%configure --enable-gpl --enable-proof --enable-language-bindings=all \
-  --disable-silent-rules --with-portfolio --without-compat \
-  --with-abc --with-abc-dir=%{_prefix} \
-  --with-cadical --with-cadical-dir=%{_prefix} \
-  --with-cryptominisat --with-cryptominisat-dir=%{_prefix} \
-  --with-lfsc --with-lfsc-dir=%{_prefix} \
-  --with-symfpu --with-symfpu-dir=%{_prefix} \
-  --with-readline
+export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
+export CXXFLAGS="$CFLAGS"
+%cmake \
+  -DCMAKE_SKIP_RPATH:BOOL=YES \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
+  -DBUILD_BINDINGS_JAVA:BOOL=ON \
+  -DBUILD_BINDINGS_PYTHON:BOOL=ON \
+  -DENABLE_GPL:BOOL=ON \
+  -DENABLE_OPTIMIZED:STRING=ON \
+  -DENABLE_PORTFOLIO:STRING=ON \
+  -DENABLE_PROOFS:STRING=ON \
+  -DENABLE_SHARED:STRING=ON \
+  -DUSE_ABC:STRING=ON \
+  -DABC_DIR:STRING=%{_prefix} \
+  -DUSE_CADICAL:BOOL=ON \
+  -DCADICAL_DIR:STRING=%{_prefix} \
+  -DUSE_CRYPTOMINISAT:BOOL=ON \
+  -DCRYPTOMINISAT_DIR:STRING=%{_prefix} \
+  -DUSE_DRAT2ER:BOOL=ON \
+  -DDRAT2ER_DIR:STRING=%{_prefix} \
+  -DDrat2Er_INCLUDE_DIR:STRING=%{_includedir}/drat2er \
+  -DDrat2Er_LIBRARIES:STRING=-ldrat2er \
+  -DDratTrim_LIBRARIES:STRING=-ldrat2er \
+  -DUSE_LFSC:BOOL=ON \
+  -DLFSC_DIR:STRING=%{_prefix} \
+  -DUSE_PYTHON3:BOOL=ON \
+  -DUSE_READLINE:STRING=ON \
+  -DUSE_SYMFPU:BOOL=ON \
+  -DSYMFPU_DIR:STRING=%{_prefix} \
+  -DPYTHON_EXECUTABLE:FILEPATH=%{_bindir}/python%{python3_version} \
+  -DPYTHON_LIBRARY:FILEPATH=%{_libdir}/libpython%{python3_version}m.so \
+  -DPYTHON_INCLUDE_DIR:FILEPATH=%{_includedir}/python%{python3_version}m \
+  .
 
-# Workaround libtool reordering -Wl,--as-needed after all the libraries
-BUILDS=$(echo $PWD/builds/*linux*/*abc*)
-sed -i 's/CC=.g../& -Wl,--as-needed/' $BUILDS/libtool
+# Tell swig to build for python 3
+sed -i 's/swig -python/& -py3/' \
+  src/bindings/python/CMakeFiles/CVC4_swig_compilation.dir/build.make
 
 make %{?_smp_mflags}
 make doc
@@ -168,89 +159,63 @@ make doc
 %install
 %make_install
 
-# Remove unwanted libtool files
-find %{buildroot}%{_libdir} -name \*.la | xargs rm -f
-
-# Remove empty directories for language bindings that do not yet exist
-rm -fr %{buildroot}%{_libdir}/{csharp,ocaml,perl5,php,pyshared,ruby,tcltk}
-rm -fr %{buildroot}%{_datadir}/{csharp,perl5,php,pyshared}
-
-# Make the Java installation match Fedora requirements
-if [ "%{_libdir}/java" != "%{_jnidir}" ]; then
-  mkdir -p %{buildroot}%{_jnidir}
-  mv %{buildroot}%{_libdir}/java/cvc4 %{buildroot}%{_jnidir}
-  rmdir %{buildroot}%{_libdir}/java
-fi
-
-# Remove still more hardcoded rpaths
-chrpath -d %{buildroot}%{_bindir}/* \
-           %{buildroot}%{_libdir}/lib%{name}*.so.*.*.* \
-           %{buildroot}%{_jnidir}/%{name}/lib%{name}*.so.*.*.*
-
-# Help the debuginfo generator
-BUILDS=$(echo $PWD/builds/*linux*/*abc*)
-for dir in decision expr main parser printer prop smt theory theory/arith \
-    theory/arrays theory/booleans theory/bv theory/datatypes theory/idl \
-    theory/quantifiers theory/rewriterules theory/strings theory/uf; do
-  ln -s $PWD/src/$dir/options $BUILDS/src/$dir
-done
-ln -s production-abc-proof/src $BUILDS/../src
-ln -s $PWD/src/options/base_options $BUILDS/src/options
-ln -s $PWD/src/options/base_options_template.cpp $BUILDS/src/options
-ln -s $PWD/src/options/options_holder_template.h $BUILDS/src/options
-ln -s $PWD/src/options/options_template.cpp $BUILDS/src/options
-ln -s $PWD/src/smt/smt_options_template.cpp $BUILDS/src/smt
-
-%ldconfig_scriptlets libs
+# BUG: CVC4 1.7 does not install the Java interface
+mkdir -p %{buildroot}%{_javadir}
+cp -p src/bindings/java/CVC4.jar %{buildroot}%{_javadir}
+mkdir -p %{buildroot}%{_jnidir}/%{name}
+cp -p src/bindings/java/libcvc4jni.so %{buildroot}%{_jnidir}/%{name}
 
 %check
 # The tests use a large amount of stack space
 ulimit -s unlimited
 
-# Do not rebuild when checking
-BUILDS=$(echo $PWD/builds/*linux*/*abc*)
-sed -e 's/\(units.*:\) all/\1/' \
-    -e 's/\(regress.*:\) all/\1/' \
-    -i $BUILDS/Makefile $BUILDS/Makefile.builds
-
-# Fix bad include paths in the test code
-sed 's,/barrett/scratch.*/expr/,./,' \
-  test/unit/expr/expr_manager_public.cpp \
-  test/unit/expr/expr_public.cpp \
-  test/unit/expr/type_cardinality_public.cpp
-
 # Fix the Java test's access to the JNI object it needs
 sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so"),' \
     -i test/system/CVC4JavaTest.java
 
+export LC_ALL=C.UTF-8
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 make check 
 
 %files
-%doc AUTHORS NEWS README RELEASE-NOTES THANKS
-%{_bindir}/*
+%doc AUTHORS NEWS README.md THANKS
+%{_bindir}/%{name}
+%{_bindir}/p%{name}
 %{_datadir}/%{name}/
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-
-%files doc
-%license COPYING
-%doc doc/doxygen/*
+%{_mandir}/man1/%{name}.1*
+%{_mandir}/man1/p%{name}.1*
+%{_mandir}/man5/%{name}.5*
 
 %files libs
-%license COPYING
-%{_libdir}/lib%{name}*.so.*
+%license COPYING licenses/channel.h-LICENSE
+%{_libdir}/lib%{name}.so.6
+%{_libdir}/lib%{name}parser.so.6
 
 %files devel
 %{_includedir}/%{name}/
-%{_libdir}/lib%{name}*.so
+%{_libdir}/lib%{name}.so
+%{_libdir}/lib%{name}parser.so
 %{_mandir}/man3/*
 
 %files java
-%{_javadir}/*.jar
+%{_javadir}/CVC4.jar
 %{_jnidir}/%{name}/
 
+%files python3
+%{python3_sitearch}/CVC4.py
+%{python3_sitearch}/_CVC4.so
+%{python3_sitearch}/__pycache__/CVC4.*
+
 %changelog
+* Wed Jun 12 2019 Jerry James <loganjerry@gmail.com> - 1.7-1
+- New upstream release
+- Drop -autoconf, -cadical, -doxygen, -symfpu, and -vec patches
+- Drop -doc subpackage; upstream no longer supports doxygen
+- Build with python 3 instead of python 2
+- Build with drat2er support
+- Add -abc and -flags patches
+- Add -swig4 patch (bz 1707353)
+
 * Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.6-6
 - Rebuild for readline 8.0
 

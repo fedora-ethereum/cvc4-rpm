@@ -1,0 +1,54 @@
+--- cmake/FindABC.cmake.orig	2019-04-09 10:14:31.000000000 -0600
++++ cmake/FindABC.cmake	2019-04-16 16:01:44.519958231 -0600
+@@ -2,7 +2,6 @@
+ # ABC_FOUND - system has ABC lib
+ # ABC_INCLUDE_DIR - the ABC include directory
+ # ABC_LIBRARIES - Libraries needed to use ABC
+-# ABC_ARCH_FLAGS - Platform specific compile flags
+ 
+ 
+ # Check default location of ABC built with contrib/get-abc.
+@@ -14,28 +13,19 @@ endif()
+ # install rule.
+ find_path(ABC_INCLUDE_DIR
+           NAMES base/abc/abc.h
+-          PATHS ${ABC_HOME}/src
++          PATHS /usr/include/abc
+           NO_DEFAULT_PATH)
+ find_library(ABC_LIBRARIES
+              NAMES abc
+-             PATHS ${ABC_HOME}
+-             NO_DEFAULT_PATH)
+-find_program(ABC_ARCH_FLAGS_PROG
+-             NAMES arch_flags
+-             PATHS ${ABC_HOME}
++             PATHS /usr/lib64
+              NO_DEFAULT_PATH)
+ 
+-if(ABC_ARCH_FLAGS_PROG)
+-  execute_process(COMMAND ${ABC_ARCH_FLAGS_PROG}
+-                  OUTPUT_VARIABLE ABC_ARCH_FLAGS)
+-endif()
+-
+ include(FindPackageHandleStandardArgs)
+ find_package_handle_standard_args(ABC
+   DEFAULT_MSG
+-  ABC_INCLUDE_DIR ABC_LIBRARIES ABC_ARCH_FLAGS)
++  ABC_INCLUDE_DIR ABC_LIBRARIES)
+ 
+-mark_as_advanced(ABC_INCLUDE_DIR ABC_LIBRARIES ABC_ARCH_FLAGS)
++mark_as_advanced(ABC_INCLUDE_DIR ABC_LIBRARIES)
+ if(ABC_LIBRARIES)
+   message(STATUS "Found ABC libs: ${ABC_LIBRARIES}")
+ endif()
+--- CMakeLists.txt.orig	2019-04-09 10:14:31.000000000 -0600
++++ CMakeLists.txt	2019-04-16 15:54:30.334111544 -0600
+@@ -379,7 +379,7 @@ endif()
+ if(USE_ABC)
+   set(ABC_HOME "${ABC_DIR}")
+   find_package(ABC REQUIRED)
+-  add_definitions(-DCVC4_USE_ABC ${ABC_ARCH_FLAGS})
++  add_definitions(-DCVC4_USE_ABC)
+ endif()
+ 
+ if(USE_CADICAL)
