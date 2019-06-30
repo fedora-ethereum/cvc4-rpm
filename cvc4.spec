@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -120,6 +120,8 @@ sed -i '/replaceall-len-c/d' test/regress/CMakeLists.txt
 %endif
 
 %build
+pyinc=$(python3-config --includes | sed -r 's/-I([^[:blank:]]+)[[:blank:]]*.*/\1/')
+pylib=$(ls -1 /usr/lib64/libpython3.*.so)
 export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
 export CXXFLAGS="$CFLAGS"
 %cmake \
@@ -150,8 +152,8 @@ export CXXFLAGS="$CFLAGS"
   -DUSE_SYMFPU:BOOL=ON \
   -DSYMFPU_DIR:STRING=%{_prefix} \
   -DPYTHON_EXECUTABLE:FILEPATH=%{_bindir}/python%{python3_version} \
-  -DPYTHON_LIBRARY:FILEPATH=%{_libdir}/libpython%{python3_version}m.so \
-  -DPYTHON_INCLUDE_DIR:FILEPATH=%{_includedir}/python%{python3_version}m \
+  -DPYTHON_LIBRARY:FILEPATH=$pylib \
+  -DPYTHON_INCLUDE_DIR:FILEPATH=$pyinc \
   .
 
 # Tell swig to build for python 3
@@ -215,6 +217,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Sat Jun 29 2019 Jerry James <loganjerry@gmail.com> - 1.7-2
+- Fix finding the python include dir and lib (bz 1724142)
+
 * Wed Jun 12 2019 Jerry James <loganjerry@gmail.com> - 1.7-1
 - New upstream release
 - Drop -autoconf, -cadical, -doxygen, -symfpu, and -vec patches
