@@ -121,7 +121,7 @@ sed -i '/replaceall-len-c/d' test/regress/CMakeLists.txt
 
 %build
 pyinc=$(python3-config --includes | sed -r 's/-I([^[:blank:]]+)[[:blank:]]*.*/\1/')
-pylib=$(ls -1 /usr/lib64/libpython3.*.so)
+pylib=$(ls -1 %{_libdir}/libpython3.*.so)
 export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
 export CXXFLAGS="$CFLAGS"
 %cmake \
