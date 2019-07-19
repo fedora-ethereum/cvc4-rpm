@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -217,6 +217,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Thu Jul 18 2019 Jerry James <loganjerry@gmail.com> - 1.7-3
+- Rebuild for cadical 1.0.3 (bz 1731031)
+
 * Sat Jun 29 2019 Jerry James <loganjerry@gmail.com> - 1.7-2
 - Fix finding the python include dir and lib (bz 1724142)
 
