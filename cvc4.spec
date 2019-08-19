@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -217,6 +217,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 1.7-5
+- Rebuilt for Python 3.8
+
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.7-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
