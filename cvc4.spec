@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -23,6 +23,9 @@ Patch0:         %{name}-abc.patch
 Patch1:         %{name}-flags.patch
 # Adapt to swig 4
 Patch2:         %{name}-swig4.patch
+# Fix drat signature wrt side condition return types
+# https://github.com/CVC4/CVC4/commit/57524fd9f204f8e85e5e37af1444a6f76d809aee
+Patch3:         %{name}-drat.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -217,6 +220,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Mon Sep  9 2019 Jerry James <loganjerry@gmail.com> - 1.7-6
+- Add -drat patch to fix build with latest lfsc
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 1.7-5
 - Rebuilt for Python 3.8
 
