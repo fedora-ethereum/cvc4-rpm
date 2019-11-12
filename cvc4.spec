@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -220,6 +220,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Mon Nov 11 2019 Jerry James <loganjerry@gmail.com> - 1.7-7
+- Rebuild for cadical 1.2.1
+
 * Mon Sep  9 2019 Jerry James <loganjerry@gmail.com> - 1.7-6
 - Add -drat patch to fix build with latest lfsc
 
