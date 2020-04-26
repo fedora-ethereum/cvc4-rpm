@@ -26,6 +26,8 @@ Patch2:         %{name}-swig4.patch
 # Fix drat signature wrt side condition return types
 # https://github.com/CVC4/CVC4/commit/57524fd9f204f8e85e5e37af1444a6f76d809aee
 Patch3:         %{name}-drat.patch
+# Adapt to cryptominisat 5.7
+Patch4:         %{name}-cryptominisat.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -222,6 +224,7 @@ make check
 %changelog
 * Sat Apr 25 2020 Jerry James <loganjerry@gmail.com> - 1.7-9
 - Rebuild for cryptominisat 5.7.0
+- Add -cryptominisat patch to adapt to changes in 5.7.0
 
 * Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.7-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild

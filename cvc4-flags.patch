@@ -1,5 +1,17 @@
---- CMakeLists.txt.orig	2019-04-16 15:54:30.334111544 -0600
-+++ CMakeLists.txt	2019-04-17 11:23:52.404867885 -0600
+--- cmake/ConfigProduction.cmake.orig	2019-04-09 10:14:31.000000000 -0600
++++ cmake/ConfigProduction.cmake	2020-04-26 17:24:03.338855205 -0600
+@@ -1,7 +1,7 @@
+-# OPTLEVEL=3
++# OPTLEVEL=2
+ # enable_optimized=yes
+ cvc4_set_option(ENABLE_OPTIMIZED ON)
+-set(OPTIMIZATION_LEVEL 3)
++set(OPTIMIZATION_LEVEL 2)
+ # enable_debug_symbols=no
+ cvc4_set_option(ENABLE_DEBUG_SYMBOLS OFF)
+ # enable_statistics=yes
+--- CMakeLists.txt.orig	2019-04-09 10:14:31.000000000 -0600
++++ CMakeLists.txt	2020-04-26 17:23:30.427884359 -0600
 @@ -125,7 +125,7 @@ option(BUILD_BINDINGS_PYTHON "Build Pyth
  #-----------------------------------------------------------------------------#
  # Internal cmake variables
@@ -33,6 +45,59 @@
  
  CFLAGS    += -I$(MROOT) -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS
  LFLAGS    += -lz
+--- src/prop/cryptominisat.cpp.orig	2019-04-09 10:14:31.000000000 -0600
++++ src/prop/cryptominisat.cpp	2020-04-26 14:04:26.086833393 -0600
+@@ -68,15 +68,8 @@ CryptoMinisatSolver::CryptoMinisatSolver
+       d_okay(true),
+       d_statistics(registry, name)
+ {
+-  d_true = newVar();
+-  d_false = newVar();
+-
+-  std::vector<CMSat::Lit> clause(1);
+-  clause[0] = CMSat::Lit(d_true, false);
+-  d_solver->add_clause(clause);
+-  
+-  clause[0] = CMSat::Lit(d_false, true);
+-  d_solver->add_clause(clause);
++  d_true = undefSatVariable;
++  d_false = undefSatVariable;
+ }
+ 
+ 
+@@ -154,10 +147,32 @@ SatVariable  CryptoMinisatSolver::newVar
+ }
+ 
+ SatVariable CryptoMinisatSolver::trueVar() {
++  if (d_true == undefSatVariable) {
++    d_true = newVar();
++    d_false = newVar();
++
++    std::vector<CMSat::Lit> clause(1);
++    clause[0] = CMSat::Lit(d_true, false);
++    d_solver->add_clause(clause);
++
++    clause[0] = CMSat::Lit(d_false, true);
++    d_solver->add_clause(clause);
++  }
+   return d_true;
+ }
+ 
+ SatVariable CryptoMinisatSolver::falseVar() {
++  if (d_true == undefSatVariable) {
++    d_true = newVar();
++    d_false = newVar();
++
++    std::vector<CMSat::Lit> clause(1);
++    clause[0] = CMSat::Lit(d_true, false);
++    d_solver->add_clause(clause);
++
++    clause[0] = CMSat::Lit(d_false, true);
++    d_solver->add_clause(clause);
++  }
+   return d_false;
+ }
+ 
 --- src/prop/minisat/mtl/template.mk.orig	2019-04-09 10:14:31.000000000 -0600
 +++ src/prop/minisat/mtl/template.mk	2019-04-17 11:22:15.879002442 -0600
 @@ -22,7 +22,7 @@ CXX       ?= g++
