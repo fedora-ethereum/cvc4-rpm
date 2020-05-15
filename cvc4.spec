@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -119,6 +119,10 @@ if [ "%{_lib}" = "lib64" ]; then
   sed -i 's/DESTINATION lib/&64/' src/CMakeLists.txt src/parser/CMakeLists.txt
 fi
 
+# Python extensions should not link against libpython; see
+# https://github.com/python/cpython/pull/12946
+sed -i 's/ \${PYTHON_LIBRARIES}//' src/bindings/python/CMakeLists.txt
+
 # One test exhausts all memory on 32-bit platforms; skip it
 %ifarch %{arm} %{ix86}
 sed -i '/replaceall-len-c/d' test/regress/CMakeLists.txt
@@ -222,6 +226,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Fri May 15 2020 Jerry James <loganjerry@gmail.com> - 1.7-10
+- Do not link against libpython
+
 * Sat Apr 25 2020 Jerry James <loganjerry@gmail.com> - 1.7-9
 - Rebuild for cryptominisat 5.7.0
 - Add -cryptominisat patch to adapt to changes in 5.7.0
