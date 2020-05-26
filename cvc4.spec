@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.7
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -226,6 +226,9 @@ make check
 %{python3_sitearch}/__pycache__/CVC4.*
 
 %changelog
+* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 1.7-11
+- Rebuilt for Python 3.9
+
 * Fri May 15 2020 Jerry James <loganjerry@gmail.com> - 1.7-10
 - Do not link against libpython
 
