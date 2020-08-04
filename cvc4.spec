@@ -194,6 +194,9 @@ if [ "%{python3_sitelib}" != "%{python3_sitearch}" ]; then
   rm -fr %{buildroot}%{prefix}/lib/python3*
 fi
 
+# The 32-bit builders run out of memory while running the test suite.  Only
+# run tests on 64-bit builders
+%ifnarch %{arm} %{ix86}
 %check
 # The tests use a large amount of stack space.
 # Only do this on s390x to workaround bz 1688841.
@@ -208,6 +211,7 @@ sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so
 export LC_ALL=C.UTF-8
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %cmake_build --target check
+%endif
 
 %files
 %doc AUTHORS NEWS README.md THANKS
@@ -243,6 +247,7 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 * Mon Aug  3 2020 Jerry James <loganjerry@gmail.com> - 1.8-1
 - Version 1.8
 - Drop upstreamed patches: -abc, -swig4, -drat
+- Run the testsuite on 64-bit architectures only
 
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.7-15
 - Second attempt - Rebuilt for
