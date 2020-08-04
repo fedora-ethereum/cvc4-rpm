@@ -2,8 +2,8 @@
 # we currently build without glpk support.
 
 Name:           cvc4
-Version:        1.7
-Release:        15%{?dist}
+Version:        1.8
+Release:        1%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -17,17 +17,10 @@ Summary:        Automatic theorem prover for SMT problems
 License:        Boost and BSD and MIT
 URL:            http://cvc4.cs.stanford.edu/
 Source0:        https://github.com/CVC4/CVC4/archive/%{version}/%{name}-%{version}.tar.gz
-# Fix detection of ABC
-Patch0:         %{name}-abc.patch
 # Do not override Fedora flags
-Patch1:         %{name}-flags.patch
-# Adapt to swig 4
-Patch2:         %{name}-swig4.patch
-# Fix drat signature wrt side condition return types
-# https://github.com/CVC4/CVC4/commit/57524fd9f204f8e85e5e37af1444a6f76d809aee
-Patch3:         %{name}-drat.patch
+Patch0:         %{name}-flags.patch
 # Adapt to cryptominisat 5.7
-Patch4:         %{name}-cryptominisat.patch
+Patch1:         %{name}-cryptominisat.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -35,27 +28,27 @@ BuildRequires:  antlr3-tool
 BuildRequires:  boost-devel
 BuildRequires:  cadical-devel
 BuildRequires:  cmake
-BuildRequires:  cryptominisat-devel
+BuildRequires:  cmake(cryptominisat5)
 BuildRequires:  cxxtest
 BuildRequires:  drat2er-devel
+BuildRequires:  drat-trim-devel
 BuildRequires:  gcc-c++
 BuildRequires:  ghostscript
 BuildRequires:  gmp-devel
 BuildRequires:  java-devel
-BuildRequires:  jpackage-utils
+BuildRequires:  javapackages-tools
+BuildRequires:  kissat-devel
 BuildRequires:  lfsc-devel
 BuildRequires:  libtool
 BuildRequires:  perl-interpreter
+BuildRequires:  pkgconfig(readline)
 BuildRequires:  python3-devel
-BuildRequires:  readline-devel
+BuildRequires:  %{py3_dist cython}
+BuildRequires:  %{py3_dist toml}
 BuildRequires:  swig
 BuildRequires:  symfpu-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-
-# This can be removed when Fedora 30 reaches EOL
-Obsoletes:      %{name}-doc < 1.7
-Provides:       %{name}-doc = %{version}-%{release}
 
 %description
 CVC4 is an efficient open-source automatic theorem prover for
@@ -92,7 +85,7 @@ SMT problems.
 Summary:        Java interface to %{name}
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       java-headless
-Requires:       jpackage-utils
+Requires:       javapackages-tools
 
 %description java
 Java interface to %{name}.
@@ -107,6 +100,12 @@ Python 3 interface to %{name}.
 %prep
 %autosetup -p0 -n CVC4-%{version}
 
+# Adapt to way kissat is packaged for Fedora
+sed -i 's,#include <kissat/kissat\.h>,#include <kissat.h>,' src/prop/kissat.h
+
+# We want to know about use of deprecated interfaces
+sed -i '/Wno-deprecated/d' CMakeLists.txt
+
 # The Java interface uses type punning
 sed -i '/include_directories/aadd_compile_options("-fno-strict-aliasing")' \
     src/bindings/java/CMakeLists.txt
@@ -116,12 +115,13 @@ sed -i 's/\${CMAKE_INSTALL_PREFIX}/\\$ENV{DESTDIR}&/' src/CMakeLists.txt
 
 # Fix installation directory on 64-bit arches
 if [ "%{_lib}" = "lib64" ]; then
-  sed -i 's/DESTINATION lib/&64/' src/CMakeLists.txt src/parser/CMakeLists.txt
+  sed -i 's/LIBRARY_INSTALL_DIR lib/&64/' CMakeLists.txt
 fi
 
 # Python extensions should not link against libpython; see
 # https://github.com/python/cpython/pull/12946
-sed -i 's/ \${PYTHON_LIBRARIES}//' src/bindings/python/CMakeLists.txt
+sed -i 's/ \${PYTHON_LIBRARIES}//' src/bindings/python/CMakeLists.txt \
+                                   src/api/python/CMakeLists.txt
 
 # One test exhausts all memory on 32-bit platforms; skip it
 %ifarch %{arm} %{ix86}
@@ -134,32 +134,32 @@ pylib=$(ls -1 %{_libdir}/libpython3.*.so)
 export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
 export CXXFLAGS="$CFLAGS"
 %cmake \
-  -DCMAKE_SKIP_RPATH:BOOL=YES \
-  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
-  -DBUILD_BINDINGS_JAVA:BOOL=ON \
   -DBUILD_BINDINGS_PYTHON:BOOL=ON \
+  -DBUILD_SWIG_BINDINGS_JAVA:BOOL=ON \
+  -DBUILD_SWIG_BINDINGS_PYTHON:BOOL=ON \
+  -DCMAKE_JAVA_COMPILE_FLAGS:STRING="-source;1.8;-target;1.8" \
   -DENABLE_GPL:BOOL=ON \
-  -DENABLE_OPTIMIZED:STRING=ON \
-  -DENABLE_PORTFOLIO:STRING=ON \
-  -DENABLE_PROOFS:STRING=ON \
-  -DENABLE_SHARED:STRING=ON \
-  -DUSE_ABC:STRING=ON \
-  -DABC_DIR:STRING=%{_prefix} \
+  -DENABLE_OPTIMIZED:BOOL=ON \
+  -DENABLE_PORTFOLIO:BOOL=ON \
+  -DENABLE_PROOFS:BOOL=ON \
+  -DENABLE_SHARED:BOOL=ON \
+  -DUSE_ABC:BOOL=ON \
+  -DABC_ARCH_FLAGS:FILEPATH="-I%{_includedir}/abc" \
   -DUSE_CADICAL:BOOL=ON \
-  -DCADICAL_DIR:STRING=%{_prefix} \
   -DUSE_CRYPTOMINISAT:BOOL=ON \
-  -DCRYPTOMINISAT_DIR:STRING=%{_prefix} \
+  -DCryptoMiniSat_INCLUDE_DIR:FILEPATH=%{_includedir}/cryptominisat5 \
   -DUSE_DRAT2ER:BOOL=ON \
-  -DDRAT2ER_DIR:STRING=%{_prefix} \
-  -DDrat2Er_INCLUDE_DIR:STRING=%{_includedir}/drat2er \
+  -DDrat2Er_INCLUDE_DIR:FILEPATH=%{_includedir} \
   -DDrat2Er_LIBRARIES:STRING=-ldrat2er \
-  -DDratTrim_LIBRARIES:STRING=-ldrat2er \
+  -DDratTrim_LIBRARIES:STRING=-ldrat-trim \
+  -DUSE_KISSAT:BOOL=ON \
+  -DKissat_INCLUDE_DIR:FILEPATH=%{_includedir} \
+  -DKissat_LIBRARIES:STRING=-lkissat \
   -DUSE_LFSC:BOOL=ON \
-  -DLFSC_DIR:STRING=%{_prefix} \
   -DUSE_PYTHON3:BOOL=ON \
-  -DUSE_READLINE:STRING=ON \
+  -DUSE_READLINE:BOOL=ON \
   -DUSE_SYMFPU:BOOL=ON \
-  -DSYMFPU_DIR:STRING=%{_prefix} \
+  -DSYMFPU_DIR:FILEPATH=%{_prefix} \
   -DPYTHON_EXECUTABLE:FILEPATH=%{_bindir}/python%{python3_version} \
   -DPYTHON_LIBRARY:FILEPATH=$pylib \
   -DPYTHON_INCLUDE_DIR:FILEPATH=$pyinc \
@@ -167,19 +167,32 @@ export CXXFLAGS="$CFLAGS"
 
 # Tell swig to build for python 3
 sed -i 's/swig -python/& -py3/' \
-  src/bindings/python/CMakeFiles/CVC4_swig_compilation.dir/build.make
+  %{__cmake_builddir}/src/bindings/python/CMakeFiles/CVC4_swig_compilation.dir/build.make
 
-make %{?_smp_mflags}
+%cmake_build
 make doc
 
 %install
-%make_install
+# The Python API install target ignores DESTDIR, so force the issue.
+sed -e 's,"%{_prefix}","%{buildroot}%{_prefix}",g' \
+    -e 's,--prefix=%{_prefix},--prefix=%{buildroot}%{_prefix},' \
+    -i %{__cmake_builddir}/src/api/python/cmake_install.cmake
 
-# BUG: CVC4 1.7 does not install the Java interface
-mkdir -p %{buildroot}%{_javadir}
-cp -p src/bindings/java/CVC4.jar %{buildroot}%{_javadir}
+%cmake_install
+
+# Link the JNI interface to where Fedora mandates it should go
 mkdir -p %{buildroot}%{_jnidir}/%{name}
-cp -p src/bindings/java/libcvc4jni.so %{buildroot}%{_jnidir}/%{name}
+ln -s ../../%{_lib}/libcvc4jni.so %{buildroot}%{_jnidir}/%{name}
+
+# Fix a symlink that points to the build directory
+rm %{buildroot}%{_javadir}/%{name}/CVC4.jar
+ln -s CVC4-%{version}.jar %{buildroot}%{_javadir}/%{name}/CVC4.jar
+
+# The cython interface is installed into the wrong directory
+if [ "%{python3_sitelib}" != "%{python3_sitearch}" ]; then
+  mv %{buildroot}%{python3_sitelib}/pycvc4* %{buildroot}%{python3_sitearch}
+  rm -fr %{buildroot}%{prefix}/lib/python3*
+fi
 
 %check
 # The tests use a large amount of stack space.
@@ -194,38 +207,43 @@ sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so
 
 export LC_ALL=C.UTF-8
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
-make check 
+%cmake_build --target check
 
 %files
 %doc AUTHORS NEWS README.md THANKS
 %{_bindir}/%{name}
-%{_bindir}/p%{name}
 %{_datadir}/%{name}/
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/man1/p%{name}.1*
 %{_mandir}/man5/%{name}.5*
 
 %files libs
-%license COPYING licenses/channel.h-LICENSE
-%{_libdir}/lib%{name}.so.6
-%{_libdir}/lib%{name}parser.so.6
+%license COPYING
+%{_libdir}/lib%{name}.so.7
+%{_libdir}/lib%{name}parser.so.7
 
 %files devel
 %{_includedir}/%{name}/
 %{_libdir}/lib%{name}.so
 %{_libdir}/lib%{name}parser.so
+%{_libdir}/cmake/CVC4/
 %{_mandir}/man3/*
 
 %files java
-%{_javadir}/CVC4.jar
+%{_javadir}/%{name}/
 %{_jnidir}/%{name}/
+%{_libdir}/libcvc4jni.so
 
 %files python3
 %{python3_sitearch}/CVC4.py
 %{python3_sitearch}/_CVC4.so
 %{python3_sitearch}/__pycache__/CVC4.*
+%{python3_sitearch}/pycvc4*
 
 %changelog
+* Mon Aug  3 2020 Jerry James <loganjerry@gmail.com> - 1.8-1
+- Version 1.8
+- Drop upstreamed patches: -abc, -swig4, -drat
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.7-15
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild

@@ -1,18 +1,16 @@
---- cmake/ConfigProduction.cmake.orig	2019-04-09 10:14:31.000000000 -0600
-+++ cmake/ConfigProduction.cmake	2020-04-26 17:24:03.338855205 -0600
-@@ -1,7 +1,7 @@
+--- cmake/ConfigProduction.cmake.orig	2020-06-19 10:59:27.000000000 -0600
++++ cmake/ConfigProduction.cmake	2020-06-21 11:47:20.134513759 -0600
+@@ -1,5 +1,5 @@
 -# OPTLEVEL=3
-+# OPTLEVEL=2
- # enable_optimized=yes
- cvc4_set_option(ENABLE_OPTIMIZED ON)
 -set(OPTIMIZATION_LEVEL 3)
++# OPTLEVEL=2
 +set(OPTIMIZATION_LEVEL 2)
  # enable_debug_symbols=no
  cvc4_set_option(ENABLE_DEBUG_SYMBOLS OFF)
  # enable_statistics=yes
---- CMakeLists.txt.orig	2019-04-09 10:14:31.000000000 -0600
-+++ CMakeLists.txt	2020-04-26 17:23:30.427884359 -0600
-@@ -125,7 +125,7 @@ option(BUILD_BINDINGS_PYTHON "Build Pyth
+--- CMakeLists.txt.orig	2020-06-19 10:59:27.000000000 -0600
++++ CMakeLists.txt	2020-06-21 11:45:03.767689990 -0600
+@@ -175,7 +175,7 @@ option(BUILD_BINDINGS_PYTHON "Build Pyth
  #-----------------------------------------------------------------------------#
  # Internal cmake variables
  
@@ -21,9 +19,9 @@
  set(GPL_LIBS "")
  
  #-----------------------------------------------------------------------------#
---- src/parser/CMakeLists.txt.orig	2019-04-09 10:14:31.000000000 -0600
-+++ src/parser/CMakeLists.txt	2019-04-17 11:21:41.680050119 -0600
-@@ -81,10 +81,6 @@ foreach(lang Cvc Smt1 Smt2 Tptp)
+--- src/parser/CMakeLists.txt.orig	2020-06-19 10:59:27.000000000 -0600
++++ src/parser/CMakeLists.txt	2020-06-21 11:45:48.007632818 -0600
+@@ -81,10 +81,6 @@ foreach(lang Cvc Smt2 Tptp)
    set_source_files_properties(${gen_src_files} PROPERTIES LANGUAGE CXX)
    set_source_files_properties(${gen_src_files} PROPERTIES GENERATED TRUE)
  
@@ -34,8 +32,8 @@
    # Add generated source files to the parser source files
    list(APPEND libcvc4parser_src_files ${gen_src_files})
  endforeach()
---- src/prop/bvminisat/mtl/template.mk.orig	2019-04-09 10:14:31.000000000 -0600
-+++ src/prop/bvminisat/mtl/template.mk	2019-04-17 11:22:27.662986017 -0600
+--- src/prop/bvminisat/mtl/template.mk.orig	2020-06-19 10:59:27.000000000 -0600
++++ src/prop/bvminisat/mtl/template.mk	2020-06-21 11:46:23.831586522 -0600
 @@ -22,7 +22,7 @@ CXX       ?= g++
  CFLAGS    ?= -Wall -Wno-parentheses
  LFLAGS    ?= -Wall
@@ -45,8 +43,8 @@
  
  CFLAGS    += -I$(MROOT) -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS
  LFLAGS    += -lz
---- src/prop/minisat/mtl/template.mk.orig	2019-04-09 10:14:31.000000000 -0600
-+++ src/prop/minisat/mtl/template.mk	2019-04-17 11:22:15.879002442 -0600
+--- src/prop/minisat/mtl/template.mk.orig	2020-06-19 10:59:27.000000000 -0600
++++ src/prop/minisat/mtl/template.mk	2020-06-21 11:46:37.670568635 -0600
 @@ -22,7 +22,7 @@ CXX       ?= g++
  CFLAGS    ?= -Wall -Wno-parentheses
  LFLAGS    ?= -Wall
