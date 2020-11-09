@@ -40,6 +40,7 @@ BuildRequires:  javapackages-tools
 BuildRequires:  kissat-devel
 BuildRequires:  lfsc-devel
 BuildRequires:  libtool
+BuildRequires:  make
 BuildRequires:  perl-interpreter
 BuildRequires:  pkgconfig(readline)
 BuildRequires:  python3-devel
@@ -167,7 +168,7 @@ export CXXFLAGS="$CFLAGS"
 
 # Tell swig to build for python 3
 sed -i 's/swig -python/& -py3/' \
-  %{__cmake_builddir}/src/bindings/python/CMakeFiles/CVC4_swig_compilation.dir/build.make
+  %{_vpath_builddir}/src/bindings/python/CMakeFiles/CVC4_swig_compilation.dir/build.make
 
 %cmake_build
 make doc
@@ -176,7 +177,7 @@ make doc
 # The Python API install target ignores DESTDIR, so force the issue.
 sed -e 's,"%{_prefix}","%{buildroot}%{_prefix}",g' \
     -e 's,--prefix=%{_prefix},--prefix=%{buildroot}%{_prefix},' \
-    -i %{__cmake_builddir}/src/api/python/cmake_install.cmake
+    -i %{_vpath_builddir}/src/api/python/cmake_install.cmake
 
 %cmake_install
 
