@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -245,6 +245,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Fri Nov 27 2020 Jerry James <loganjerry@gmail.com> - 1.8-2
+- Rebuild for cryptominisat 5.8.0
+
 * Mon Aug  3 2020 Jerry James <loganjerry@gmail.com> - 1.8-1
 - Version 1.8
 - Drop upstreamed patches: -abc, -swig4, -drat
