@@ -15,7 +15,7 @@ Summary:        Automatic theorem prover for SMT problems
 #   o src/parser/bounded_token_buffer.cpp
 # - All other files are distributed under the MIT license
 License:        Boost and BSD and MIT
-URL:            http://cvc4.cs.stanford.edu/
+URL:            https://cvc4.github.io/
 Source0:        https://github.com/CVC4/CVC4/archive/%{version}/%{name}-%{version}.tar.gz
 # Do not override Fedora flags
 Patch0:         %{name}-flags.patch
