@@ -1,0 +1,18 @@
+--- proofs/signatures/th_bv.plf.orig	2020-06-19 10:59:27.000000000 -0600
++++ proofs/signatures/th_bv.plf	2021-01-20 14:56:16.883629683 -0700
+@@ -72,7 +72,6 @@
+ 
+ (declare bvand bvop2)
+ (declare bvor bvop2)
+-(declare bvor bvop2)
+ (declare bvxor bvop2)
+ (declare bvnand bvop2)
+ (declare bvnor bvop2)
+@@ -88,7 +87,6 @@
+ (declare bvshl bvop2)
+ (declare bvlshr bvop2)
+ (declare bvashr bvop2)
+-(declare concat bvop2)
+ 
+ ; bit vector unary operators
+ (define bvop1

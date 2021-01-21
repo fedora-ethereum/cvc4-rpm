@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -21,6 +21,8 @@ Source0:        https://github.com/CVC4/CVC4/archive/%{version}/%{name}-%{versio
 Patch0:         %{name}-flags.patch
 # Adapt to cryptominisat 5.7
 Patch1:         %{name}-cryptominisat.patch
+# Remove duplicate declarations, leads to errors with recent LFSC versions
+Patch2:         %{name}-dup-decl.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -245,6 +247,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Wed Jan 20 2021 Jerry James <loganjerry@gamil.com> - 1.8-3
+- Add -dup-decl patch to fix FTBFS with recent LFSC versions
+
 * Fri Nov 27 2020 Jerry James <loganjerry@gmail.com> - 1.8-2
 - Rebuild for cryptominisat 5.8.0
 
