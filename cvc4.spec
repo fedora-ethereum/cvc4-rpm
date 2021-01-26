@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 # License breakdown:
@@ -247,6 +247,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Wed Jan 20 2021 Jerry James <loganjerry@gamil.com> - 1.8-3
 - Add -dup-decl patch to fix FTBFS with recent LFSC versions
 
