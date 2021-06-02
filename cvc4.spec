@@ -3,8 +3,10 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Automatic theorem prover for SMT problems
+
+%global jar_version %{version}.0
 
 # License breakdown:
 # - Files containing code under the Boost license:
@@ -141,6 +143,8 @@ export CXXFLAGS="$CFLAGS"
   -DBUILD_SWIG_BINDINGS_JAVA:BOOL=ON \
   -DBUILD_SWIG_BINDINGS_PYTHON:BOOL=ON \
   -DCMAKE_JAVA_COMPILE_FLAGS:STRING="-source;1.8;-target;1.8" \
+  -DCMAKE_SKIP_RPATH:BOOL=YES \
+  -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
   -DENABLE_GPL:BOOL=ON \
   -DENABLE_OPTIMIZED:BOOL=ON \
   -DENABLE_PORTFOLIO:BOOL=ON \
@@ -189,13 +193,16 @@ ln -s ../../%{_lib}/libcvc4jni.so %{buildroot}%{_jnidir}/%{name}
 
 # Fix a symlink that points to the build directory
 rm %{buildroot}%{_javadir}/%{name}/CVC4.jar
-ln -s CVC4-%{version}.jar %{buildroot}%{_javadir}/%{name}/CVC4.jar
+ln -s CVC4-%{jar_version}.jar %{buildroot}%{_javadir}/%{name}/CVC4.jar
 
 # The cython interface is installed into the wrong directory
 if [ "%{python3_sitelib}" != "%{python3_sitearch}" ]; then
   mv %{buildroot}%{python3_sitelib}/pycvc4* %{buildroot}%{python3_sitearch}
   rm -fr %{buildroot}%{prefix}/lib/python3*
 fi
+
+# Add a missing executable bit
+chmod 0755 %{buildroot}%{python3_sitearch}/pycvc4/pycvc4.so
 
 # The 32-bit builders run out of memory while running the test suite.  Only
 # run tests on 64-bit builders
@@ -247,6 +254,11 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Wed Jun  2 2021 Jerry James <loganjerry@gmail.com> - 1.8-5
+- Remove spurious rpaths (bz 1967190)
+- Fix broken jar symlink
+- Add missing executable bit to python shared object
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
