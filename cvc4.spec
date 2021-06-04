@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 %global jar_version %{version}.0
@@ -254,6 +254,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 1.8-6
+- Rebuilt for Python 3.10
+
 * Wed Jun  2 2021 Jerry James <loganjerry@gmail.com> - 1.8-5
 - Remove spurious rpaths (bz 1967190)
 - Fix broken jar symlink
