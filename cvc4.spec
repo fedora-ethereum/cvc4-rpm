@@ -26,6 +26,12 @@ Patch1:         %{name}-cryptominisat.patch
 # Remove duplicate declarations, leads to errors with recent LFSC versions
 Patch2:         %{name}-dup-decl.patch
 
+# Just use the default linker specied by the distro. ld.gold was the
+# new kid on the block a while ago, primarily offering higher link
+# speeds. But it has aged, and has less features than ld.bfd. Let's
+# use ld.bfd so that package notes work without workarounds.
+Patch3:         %{name}-do-not-use-gold.diff
+
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
@@ -256,6 +262,7 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %changelog
 * Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+- Use the default linker
 
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
