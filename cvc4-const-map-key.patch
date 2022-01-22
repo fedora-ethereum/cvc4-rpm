@@ -1,0 +1,47 @@
+--- src/context/cdinsert_hashmap.h.orig	2020-06-19 10:59:27.000000000 -0600
++++ src/context/cdinsert_hashmap.h	2022-01-22 15:49:35.129038124 -0700
+@@ -57,7 +57,7 @@ private:
+   /** A list of the keys in the map maintained as a stack. */
+   KeyVec d_keys;
+ 
+-  using HashMap = std::unordered_map<const Key, const Data, HashFcn>;
++  using HashMap = std::unordered_map<Key, const Data, HashFcn>;
+   /** The hash_map used for element lookup. */
+   HashMap d_hashMap;
+ 
+@@ -95,7 +95,7 @@ public:
+    * See hash_map::find()
+    */
+   const_iterator find(const Key& k) const{
+-    return d_hashMap.find(k);
++    return d_hashMap.find(const_cast<Key&>(k));
+   }
+ 
+   /** Returns an iterator to the start of the set of keys. */
+@@ -114,7 +114,7 @@ public:
+ 
+   /** Returns true if k is a mapped key. */
+   bool contains(const Key& k) const {
+-    return find(k) != end();
++    return find(const_cast<Key&>(k)) != end();
+   }
+ 
+   /**
+@@ -122,7 +122,7 @@ public:
+    * This must succeed.
+    */
+   const Data& operator[](const Key& k) const {
+-    const_iterator ci = find(k);
++    const_iterator ci = find(const_cast<Key&>(k));
+     Assert(ci != end());
+     return (*ci).second;
+   }
+@@ -361,7 +361,7 @@ public:
+     * the context.
+     */
+   const_iterator find(const Key& k) const {
+-    return d_insertMap->find(k);
++    return d_insertMap->find(const_cast<Key&>(k));
+   }
+ 
+   /**

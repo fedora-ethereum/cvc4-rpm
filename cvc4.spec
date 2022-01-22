@@ -25,12 +25,14 @@ Patch0:         %{name}-flags.patch
 Patch1:         %{name}-cryptominisat.patch
 # Remove duplicate declarations, leads to errors with recent LFSC versions
 Patch2:         %{name}-dup-decl.patch
-
 # Just use the default linker specied by the distro. ld.gold was the
 # new kid on the block a while ago, primarily offering higher link
 # speeds. But it has aged, and has less features than ld.bfd. Let's
 # use ld.bfd so that package notes work without workarounds.
 Patch3:         %{name}-do-not-use-gold.diff
+# Change map keys from const to non-const
+# https://bugzilla.redhat.com/show_bug.cgi?id=2043767
+Patch4:         %{name}-const-map-key.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -260,6 +262,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Sat Jan 22 2022 Jerry James <loganjerry@gmail.com> - 1.8-8
+- Add -const-map-key patch to fix FTBFS
+
 * Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 - Use the default linker
