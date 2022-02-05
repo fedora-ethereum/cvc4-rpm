@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 %global jar_version %{version}.0
@@ -262,6 +262,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Sat Feb 05 2022 Jiri Vanek <jvanek@redhat.com> - 1.8-9
+- Rebuilt for java-17-openjdk as system jdk
+
 * Sat Jan 22 2022 Jerry James <loganjerry@gmail.com> - 1.8-8
 - Add -const-map-key patch to fix FTBFS
 
