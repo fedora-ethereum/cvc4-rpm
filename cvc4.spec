@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 %global jar_version %{version}.0
@@ -25,14 +25,11 @@ Patch0:         %{name}-flags.patch
 Patch1:         %{name}-cryptominisat.patch
 # Remove duplicate declarations, leads to errors with recent LFSC versions
 Patch2:         %{name}-dup-decl.patch
-# Just use the default linker specied by the distro. ld.gold was the
+# Just use the default linker specified by the distro. ld.gold was the
 # new kid on the block a while ago, primarily offering higher link
 # speeds. But it has aged, and has less features than ld.bfd. Let's
 # use ld.bfd so that package notes work without workarounds.
 Patch3:         %{name}-do-not-use-gold.diff
-# Change map keys from const to non-const
-# https://bugzilla.redhat.com/show_bug.cgi?id=2043767
-Patch4:         %{name}-const-map-key.patch
 
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
@@ -177,8 +174,7 @@ export CXXFLAGS="$CFLAGS"
   -DSYMFPU_DIR:FILEPATH=%{_prefix} \
   -DPYTHON_EXECUTABLE:FILEPATH=%{_bindir}/python%{python3_version} \
   -DPYTHON_LIBRARY:FILEPATH=$pylib \
-  -DPYTHON_INCLUDE_DIR:FILEPATH=$pyinc \
-  .
+  -DPYTHON_INCLUDE_DIR:FILEPATH=$pyinc
 
 # Tell swig to build for python 3
 sed -i 's/swig -python/& -py3/' \
@@ -262,6 +258,10 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Fri Mar  4 2022 Jerry James <loganjerry@gmail.com> - 1.8-10
+- Remove . from %%cmake invocation to fix FTBFS (rhbz#2060821)
+- Drop -const-map-key patch now that gcc has been fixed
+
 * Sat Feb 05 2022 Jiri Vanek <jvanek@redhat.com> - 1.8-9
 - Rebuilt for java-17-openjdk as system jdk
 
