@@ -31,6 +31,10 @@ Patch2:         %{name}-dup-decl.patch
 # use ld.bfd so that package notes work without workarounds.
 Patch3:         %{name}-do-not-use-gold.diff
 
+# ANTLR 3 is not available on i686.
+# See https://fedoraproject.org/wiki/Changes/Drop_i686_JDKs
+ExclusiveArch:  %{java_arches}
+
 BuildRequires:  abc-devel
 BuildRequires:  antlr3-C-devel
 BuildRequires:  antlr3-tool
@@ -133,15 +137,10 @@ fi
 sed -i 's/ \${PYTHON_LIBRARIES}//' src/bindings/python/CMakeLists.txt \
                                    src/api/python/CMakeLists.txt
 
-# One test exhausts all memory on 32-bit platforms; skip it
-%ifarch %{arm} %{ix86}
-sed -i '/replaceall-len-c/d' test/regress/CMakeLists.txt
-%endif
-
 %build
 pyinc=$(python3-config --includes | sed -r 's/-I([^[:blank:]]+)[[:blank:]]*.*/\1/')
 pylib=$(ls -1 %{_libdir}/libpython3.*.so)
-export CFLAGS="%{optflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc"
+export CFLAGS='%{build_cflags} -fsigned-char -DABC_USE_STDINT_H -I%{_jvmdir}/java/include -I%{_jvmdir}/java/include/linux -I%{_includedir}/abc'
 export CXXFLAGS="$CFLAGS"
 %cmake \
   -DBUILD_BINDINGS_PYTHON:BOOL=ON \
@@ -208,9 +207,6 @@ fi
 # Add a missing executable bit
 chmod 0755 %{buildroot}%{python3_sitearch}/pycvc4/pycvc4.so
 
-# The 32-bit builders run out of memory while running the test suite.  Only
-# run tests on 64-bit builders
-%ifnarch %{arm} %{ix86}
 %check
 # The tests use a large amount of stack space.
 # Only do this on s390x to workaround bz 1688841.
@@ -225,7 +221,6 @@ sed 's,loadLibrary("cvc4jni"),load("%{buildroot}%{_jnidir}/%{name}/libcvc4jni.so
 export LC_ALL=C.UTF-8
 export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %cmake_build --target check
-%endif
 
 %files
 %doc AUTHORS NEWS README.md THANKS
@@ -258,6 +253,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Tue Jul 19 2022 Jerry James <loganjerry@gmail.com> - 1.8-11
+- Drop support for i686 due to ANTLR unavailability
+
 * Mon Jun 13 2022 Python Maint <python-maint@redhat.com> - 1.8-11
 - Rebuilt for Python 3.11
 
