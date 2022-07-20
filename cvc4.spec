@@ -3,7 +3,7 @@
 
 Name:           cvc4
 Version:        1.8
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Automatic theorem prover for SMT problems
 
 %global jar_version %{version}.0
@@ -253,6 +253,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Wed Jul 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Tue Jul 19 2022 Jerry James <loganjerry@gmail.com> - 1.8-11
 - Drop support for i686 due to ANTLR unavailability
 
