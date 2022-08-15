@@ -9,14 +9,11 @@ Summary:        Automatic theorem prover for SMT problems
 %global jar_version %{version}.0
 
 # License breakdown:
-# - Files containing code under the Boost license:
-#   o src/util/channel.h
-#   o examples/hashsmt/sha1.hpp
-# - Files containing code under the BSD license:
-#   o src/parser/antlr_input_imports.cpp
-#   o src/parser/bounded_token_buffer.cpp
-# - All other files are distributed under the MIT license
-License:        Boost and BSD and MIT
+# - The project as a whole is BSD-3-Clause
+# - Files distributed under the MIT license
+#   o src/prop/bvminisat
+#   o src/prop/minisat
+License:        BSD-3-Clause AND MIT
 URL:            https://cvc4.github.io/
 Source0:        https://github.com/CVC4/CVC4/archive/%{version}/%{name}-%{version}.tar.gz
 # Do not override Fedora flags
@@ -253,6 +250,9 @@ export LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %{python3_sitearch}/pycvc4*
 
 %changelog
+* Mon Aug 15 2022 Jerry James <loganjerry@gmail.com> - 1.8-12
+- Convert License tag to SPDX
+
 * Wed Jul 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
