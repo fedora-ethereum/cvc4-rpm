@@ -1,0 +1,22 @@
+Index: cmake/ConfigureCVC4.cmake
+===================================================================
+--- cmake/ConfigureCVC4.cmake
++++ cmake/ConfigureCVC4.cmake
+@@ -1,3 +1,4 @@
++include(CheckCSourceCompiles)
+ include(CheckCXXSourceCompiles)
+ include(CheckIncludeFile)
+ include(CheckIncludeFileCXX)
+Index: CVC4-1.8/cmake/FindReadline.cmake
+===================================================================
+--- cmake/FindReadline.cmake
++++ cmake/FindReadline.cmake
+@@ -8,6 +8,8 @@
+ find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
+ find_library(Readline_LIBRARIES NAMES readline)
+ 
++include(CheckCXXSourceCompiles)
++
+ # Try to compile and link a simple program against readline. 'libs' can be
+ # used to specify additional required libraries.
+ function(try_compile_readline libs _result)
