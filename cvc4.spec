@@ -15,7 +15,7 @@ Summary:        Automatic theorem prover for SMT problems
 #   o src/prop/minisat
 License:        BSD-3-Clause AND MIT
 URL:            https://cvc4.github.io/
-Source0:        https://github.com/CVC5/CVC5/archive/%{version}/cvc5-%{version}.tar.gz
+Source0:        https://github.com/CVC4/CVC4-archived/archive/%{version}/%{name}-%{version}.tar.gz
 # Do not override Fedora flags
 Patch0:         %{name}-flags.patch
 # Adapt to cryptominisat 5.7
@@ -118,7 +118,7 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Python 3 interface to %{name}.
 
 %prep
-%autosetup -p0 -n cvc5-%{version}
+%autosetup -p0
 
 # Adapt to way kissat is packaged for Fedora
 sed -i 's,#include <kissat/kissat\.h>,#include <kissat.h>,' src/prop/kissat.h
