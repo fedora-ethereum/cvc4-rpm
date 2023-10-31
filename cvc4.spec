@@ -40,6 +40,7 @@ Patch10:        cvc4-0010-The-Java-interface-uses-type-punning.patch
 Patch11:        cvc4-0011-The-header-file-installation-script-does-not-know-ab.patch
 Patch12:        cvc4-0012-Fix-Python-library-linking.patch
 Patch13:        cvc4-0013-Fedora-specific-installation-directory-on-64-bit-arc.patch
+patch14:        cvc4-0014-Adapt-to-a-recent-LFSC.patch
 
 # ANTLR 3 is not available on i686.
 # See https://fedoraproject.org/wiki/Changes/Drop_i686_JDKs
