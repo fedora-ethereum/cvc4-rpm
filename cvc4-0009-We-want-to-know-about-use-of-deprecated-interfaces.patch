@@ -1,0 +1,18 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 31 Oct 2023 19:36:10 +0100
+Subject: [PATCH] We want to know about use of deprecated interfaces
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8df09020d..a9fb00f7e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -224,7 +224,6 @@ include(Config${CMAKE_BUILD_TYPE})
+ add_check_c_cxx_flag("-O${OPTIMIZATION_LEVEL}")
+ add_check_c_cxx_flag("-Wall")
+ add_check_c_flag("-fexceptions")
+-add_check_c_cxx_flag("-Wno-deprecated")
+ add_check_cxx_flag("-Wsuggest-override")
+ add_check_cxx_flag("-Wnon-virtual-dtor")
+ add_check_c_cxx_flag("-Wimplicit-fallthrough")

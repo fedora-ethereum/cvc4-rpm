@@ -1,0 +1,27 @@
+From: =?UTF-8?q?Bj=C3=B6rn=20Esser?= <besser82@fedoraproject.org>
+Date: Mon, 12 Jun 2023 23:45:38 +0200
+Subject: [PATCH] Fix build with CMake v3.27.0
+
+
+diff --git a/cmake/ConfigureCVC4.cmake b/cmake/ConfigureCVC4.cmake
+index 67c1f414d..76fe03544 100644
+--- a/cmake/ConfigureCVC4.cmake
++++ b/cmake/ConfigureCVC4.cmake
+@@ -1,3 +1,4 @@
++include(CheckCSourceCompiles)
+ include(CheckCXXSourceCompiles)
+ include(CheckIncludeFile)
+ include(CheckIncludeFileCXX)
+diff --git a/cmake/FindReadline.cmake b/cmake/FindReadline.cmake
+index edac03027..f987f3655 100644
+--- a/cmake/FindReadline.cmake
++++ b/cmake/FindReadline.cmake
+@@ -8,6 +8,8 @@
+ find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
+ find_library(Readline_LIBRARIES NAMES readline)
+ 
++include(CheckCXXSourceCompiles)
++
+ # Try to compile and link a simple program against readline. 'libs' can be
+ # used to specify additional required libraries.
+ function(try_compile_readline libs _result)

@@ -1,0 +1,19 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 31 Oct 2023 19:35:40 +0100
+Subject: [PATCH] Adapt to way kissat is packaged for Fedora
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/prop/kissat.h b/src/prop/kissat.h
+index 35b33daeb..d38a792d1 100644
+--- a/src/prop/kissat.h
++++ b/src/prop/kissat.h
+@@ -24,7 +24,7 @@
+ #include "prop/sat_solver.h"
+ 
+ extern "C" {
+-#include <kissat/kissat.h>
++#include <kissat.h>
+ }
+ 
+ namespace CVC4 {

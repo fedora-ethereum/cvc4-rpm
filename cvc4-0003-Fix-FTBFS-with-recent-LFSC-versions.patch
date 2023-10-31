@@ -1,5 +1,12 @@
---- proofs/signatures/th_bv.plf.orig	2020-06-19 10:59:27.000000000 -0600
-+++ proofs/signatures/th_bv.plf	2021-01-20 14:56:16.883629683 -0700
+From: Jerry James <loganjerry@gmail.com>
+Date: Wed, 20 Jan 2021 21:58:43 -0700
+Subject: [PATCH] Fix FTBFS with recent LFSC versions
+
+
+diff --git a/proofs/signatures/th_bv.plf b/proofs/signatures/th_bv.plf
+index 934951a86..f0ced51c7 100644
+--- a/proofs/signatures/th_bv.plf
++++ b/proofs/signatures/th_bv.plf
 @@ -72,7 +72,6 @@
  
  (declare bvand bvop2)

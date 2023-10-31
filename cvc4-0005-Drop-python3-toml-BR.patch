@@ -1,5 +1,12 @@
---- src/options/CMakeLists.txt.orig	2020-06-19 10:59:27.000000000 -0600
-+++ src/options/CMakeLists.txt	2022-10-11 09:51:23.145795341 -0600
+From: Jerry James <loganjerry@gmail.com>
+Date: Tue, 11 Oct 2022 14:54:00 -0600
+Subject: [PATCH] Drop python3-toml BR
+
+
+diff --git a/src/options/CMakeLists.txt b/src/options/CMakeLists.txt
+index 46bd17172..ecf4f7c03 100644
+--- a/src/options/CMakeLists.txt
++++ b/src/options/CMakeLists.txt
 @@ -1,7 +1,7 @@
  # Check if the toml Python module is installed.
  execute_process(
@@ -9,8 +16,10 @@
    RESULT_VARIABLE
      RET_TOML
    ERROR_QUIET
---- src/options/mkoptions.py.orig	2020-06-19 10:59:27.000000000 -0600
-+++ src/options/mkoptions.py	2022-10-11 09:54:27.753086129 -0600
+diff --git a/src/options/mkoptions.py b/src/options/mkoptions.py
+index d9bc1a0bd..7d2f37849 100755
+--- a/src/options/mkoptions.py
++++ b/src/options/mkoptions.py
 @@ -46,7 +46,7 @@ import os
  import re
  import sys

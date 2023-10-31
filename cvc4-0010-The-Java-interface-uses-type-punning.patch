@@ -1,0 +1,18 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 31 Oct 2023 19:36:56 +0100
+Subject: [PATCH] The Java interface uses type punning
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/bindings/java/CMakeLists.txt b/src/bindings/java/CMakeLists.txt
+index 8e919db86..1a809f9a5 100644
+--- a/src/bindings/java/CMakeLists.txt
++++ b/src/bindings/java/CMakeLists.txt
+@@ -3,6 +3,7 @@ find_package(JNI REQUIRED)
+ include(UseJava)
+ 
+ include_directories(${JNI_INCLUDE_DIRS})
++add_compile_options("-fno-strict-aliasing")
+ 
+ set(SWIG_MODULE_cvc4jni_EXTRA_DEPS cvc4 cvc4parser)
+ set_property(SOURCE ${CVC4_SWIG_INTERFACE} PROPERTY CPLUSPLUS ON)

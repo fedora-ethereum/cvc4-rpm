@@ -1,6 +1,13 @@
---- src/prop/cryptominisat.cpp.orig	2020-06-19 10:59:27.000000000 -0600
-+++ src/prop/cryptominisat.cpp	2020-06-21 11:51:21.496211208 -0600
-@@ -73,15 +73,8 @@ CryptoMinisatSolver::CryptoMinisatSolver
+From: Jerry James <loganjerry@gmail.com>
+Date: Sun, 26 Apr 2020 17:26:14 -0600
+Subject: [PATCH] Add patch to adapt to changes in 5.7.0
+
+
+diff --git a/src/prop/cryptominisat.cpp b/src/prop/cryptominisat.cpp
+index cf23758f1..97e7a350b 100644
+--- a/src/prop/cryptominisat.cpp
++++ b/src/prop/cryptominisat.cpp
+@@ -73,15 +73,8 @@ CryptoMinisatSolver::CryptoMinisatSolver(StatisticsRegistry* registry,
  
  void CryptoMinisatSolver::init()
  {
@@ -18,7 +25,7 @@
  }
  
  CryptoMinisatSolver::~CryptoMinisatSolver() {}
-@@ -158,10 +151,32 @@ SatVariable  CryptoMinisatSolver::newVar
+@@ -158,10 +151,32 @@ SatVariable  CryptoMinisatSolver::newVar(bool isTheoryAtom, bool preRegister, bo
  }
  
  SatVariable CryptoMinisatSolver::trueVar() {

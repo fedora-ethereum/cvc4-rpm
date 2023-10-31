@@ -1,0 +1,37 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 31 Oct 2023 19:38:24 +0100
+Subject: [PATCH] Fix Python library linking
+
+Python extensions should not link against libpython. See this link for
+further details:
+
+https://github.com/python/cpython/pull/12946
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/api/python/CMakeLists.txt b/src/api/python/CMakeLists.txt
+index 1998954e5..dfc10b4c7 100644
+--- a/src/api/python/CMakeLists.txt
++++ b/src/api/python/CMakeLists.txt
+@@ -36,7 +36,7 @@ add_library(pycvc4
+             MODULE
+             ${pycvc4})
+ 
+-target_link_libraries(pycvc4 cvc4 ${PYTHON_LIBRARIES})
++target_link_libraries(pycvc4 cvc4)
+ 
+ python_extension_module(pycvc4)
+ 
+diff --git a/src/bindings/python/CMakeLists.txt b/src/bindings/python/CMakeLists.txt
+index d03924680..31da1393e 100644
+--- a/src/bindings/python/CMakeLists.txt
++++ b/src/bindings/python/CMakeLists.txt
+@@ -22,7 +22,7 @@ if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+ else()
+   swig_add_library(CVC4 LANGUAGE Python SOURCES ${CVC4_SWIG_INTERFACE})
+ endif()
+-swig_link_libraries(CVC4 cvc4 cvc4parser ${PYTHON_LIBRARIES})
++swig_link_libraries(CVC4 cvc4 cvc4parser)
+ 
+ 
+ # Install Python bindings to the corresponding python-*/site-packages

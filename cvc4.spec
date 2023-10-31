@@ -17,23 +17,29 @@ License:        BSD-3-Clause AND MIT
 URL:            https://cvc4.github.io/
 Source0:        https://github.com/CVC4/CVC4-archived/archive/%{version}/%{name}-%{version}.tar.gz
 # Do not override Fedora flags
-Patch0:         %{name}-flags.patch
+Patch1:         cvc4-0001-Fix-flags.patch
 # Adapt to cryptominisat 5.7
-Patch1:         %{name}-cryptominisat.patch
+Patch2:         cvc4-0002-Add-patch-to-adapt-to-changes-in-5.7.0.patch
 # Remove duplicate declarations, leads to errors with recent LFSC versions
-Patch2:         %{name}-dup-decl.patch
+Patch3:         cvc4-0003-Fix-FTBFS-with-recent-LFSC-versions.patch
 # Just use the default linker specified by the distro. ld.gold was the
 # new kid on the block a while ago, primarily offering higher link
 # speeds. But it has aged, and has less features than ld.bfd. Let's
 # use ld.bfd so that package notes work without workarounds.
-Patch3:         %{name}-do-not-use-gold.diff
+Patch4:         cvc4-0004-Switch-to-ld.bfd-so-that-package-notes-work-without-.patch
 # Use tomllib instead of the deprecated toml package
-Patch4:         %{name}-toml.patch
+Patch5:         cvc4-0005-Drop-python3-toml-BR.patch
 # Turn off the bash patsub_replacement option, which breaks templating
-Patch5:         %{name}-bash-patsub-replacement.patch
+Patch6:         cvc4-0006-Fixes-the-build-with-bash-5.2-bz-2133760.patch
 # Add explicit includes to make CMake-3.27 happy
 # https://bugzilla.redhat.com/show_bug.cgi?id=2214406
-Patch6:         %{name}-cmake327.patch
+Patch7:         cvc4-0007-Fix-build-with-CMake-v3.27.0.patch
+Patch8:         cvc4-0008-Adapt-to-way-kissat-is-packaged-for-Fedora.patch
+Patch9:         cvc4-0009-We-want-to-know-about-use-of-deprecated-interfaces.patch
+Patch10:        cvc4-0010-The-Java-interface-uses-type-punning.patch
+Patch11:        cvc4-0011-The-header-file-installation-script-does-not-know-ab.patch
+Patch12:        cvc4-0012-Fix-Python-library-linking.patch
+Patch13:        cvc4-0013-Fedora-specific-installation-directory-on-64-bit-arc.patch
 
 # ANTLR 3 is not available on i686.
 # See https://fedoraproject.org/wiki/Changes/Drop_i686_JDKs
@@ -118,30 +124,7 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Python 3 interface to %{name}.
 
 %prep
-%autosetup -p0
-
-# Adapt to way kissat is packaged for Fedora
-sed -i 's,#include <kissat/kissat\.h>,#include <kissat.h>,' src/prop/kissat.h
-
-# We want to know about use of deprecated interfaces
-sed -i '/Wno-deprecated/d' CMakeLists.txt
-
-# The Java interface uses type punning
-sed -i '/include_directories/aadd_compile_options("-fno-strict-aliasing")' \
-    src/bindings/java/CMakeLists.txt
-
-# The header file installation script does not know about DESTDIR
-sed -i 's/\${CMAKE_INSTALL_PREFIX}/\\$ENV{DESTDIR}&/' src/CMakeLists.txt
-
-# Fix installation directory on 64-bit arches
-if [ "%{_lib}" = "lib64" ]; then
-  sed -i 's/LIBRARY_INSTALL_DIR lib/&64/' CMakeLists.txt
-fi
-
-# Python extensions should not link against libpython; see
-# https://github.com/python/cpython/pull/12946
-sed -i 's/ \${PYTHON_LIBRARIES}//' src/bindings/python/CMakeLists.txt \
-                                   src/api/python/CMakeLists.txt
+%autosetup -p1
 
 %build
 pyinc=$(python3-config --includes | sed -r 's/-I([^[:blank:]]+)[[:blank:]]*.*/\1/')
