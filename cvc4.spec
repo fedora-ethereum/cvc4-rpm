@@ -124,7 +124,7 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Python 3 interface to %{name}.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n CVC4-archived-%{version}
 
 %build
 pyinc=$(python3-config --includes | sed -r 's/-I([^[:blank:]]+)[[:blank:]]*.*/\1/')
