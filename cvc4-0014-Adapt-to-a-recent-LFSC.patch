@@ -1,0 +1,33 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 31 Oct 2023 21:18:35 +0100
+Subject: [PATCH] Adapt to a recent LFSC
+
+See this PR for further details - cvc5/LFSC#61.
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/smt/smt_engine.cpp b/src/smt/smt_engine.cpp
+index b826ef23d..80d297a26 100644
+--- a/src/smt/smt_engine.cpp
++++ b/src/smt/smt_engine.cpp
+@@ -2500,7 +2500,7 @@ void SmtEngine::checkProof()
+   {
+     TimerStat::CodeTimer checkProofTimer(d_stats->d_lfscCheckProofTime);
+     lfscc_init();
+-    lfscc_check_file(pfStream, false, false, false, false, false, false, false);
++    lfscc_check_file(pfStream, false, false, false, false, false, false);
+   }
+   // FIXME: we should actually call lfscc_cleanup here, but lfscc_cleanup
+   // segfaults on regress0/bv/core/bitvec7.smt
+diff --git a/test/unit/proof/er_proof_black.h b/test/unit/proof/er_proof_black.h
+index d9178e34e..b0d5e487c 100644
+--- a/test/unit/proof/er_proof_black.h
++++ b/test/unit/proof/er_proof_black.h
+@@ -459,6 +459,6 @@ void ErProofBlack::testErTraceCheckOutputMedium()
+   actual_pf << proof::plf_signatures << pf_header << actual_pf_body.str() << pf_footer;
+ 
+   lfscc_init();
+-  lfscc_check_file(actual_pf, false, false, false, false, false, false, false);
++  lfscc_check_file(actual_pf, false, false, false, false, false, false);
+ #endif
+ }
